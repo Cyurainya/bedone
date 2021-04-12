@@ -1,13 +1,23 @@
 <script>
 export default {
   onLaunch: function () {
-    console.log('App Launch') 
+    console.log('App Launch')
+    this.initLogin();
   },
   onShow: function () {
     console.log('App Show')
   },
   onHide: function () {
     console.log('App Hide')
+  },
+  methods: {
+    async initLogin () {
+      const userInfo = uni.getStorageSync('userInfo');
+      console.log('userInfo-------' + userInfo)
+      if (userInfo) {
+        this.$store.dispatch('setUserData', userInfo)
+      }
+    }
   }
 }
 </script>

@@ -1,5 +1,10 @@
 import Vue from 'vue'
 import App from './App'
+import store from './store'
+import * as util from '@/utils/utils'
+
+Vue.prototype.$util = util
+Vue.prototype.$store = store
 
 Vue.config.productionTip = false
 

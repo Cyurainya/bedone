@@ -21,8 +21,7 @@
 
 <script scoped>
 import pop from '@/components/ming-pop/ming-pop.vue'
-import wxLogin from '@/utils/wxLogin'
-import myRequest from '@/utils/request'
+
 export default {
   components: { pop },
   data () {
@@ -35,9 +34,9 @@ export default {
   },
   methods: {
     async showLogin () {
-      const code = await wxLogin();
-      const res = await myRequest('wxlogin', code)
-      console.log(res)
+      // const code = await wxLogin();
+      // const res = await myRequest('wxlogin', code)
+      // console.log(res)
 
       this.$refs.pop.show();
 
