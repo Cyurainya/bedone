@@ -3,10 +3,11 @@
   <view class="content">
     <image class="logo"
            src="/static/logo.png" />
-    <view class="login-button"
-          @click="showLogin">
+    <button class="login-button"
+            open-type="getUserInfo"
+            @getuserinfo="mpWxLogin">
       微信一键登录
-    </view>
+    </button>
 
     <pop ref="pop"
          direction="below"
@@ -21,9 +22,10 @@
 
 <script scoped>
 import pop from '@/components/ming-pop/ming-pop.vue'
-
+import loginMpWx from '@/utils/login/login-mp.js'
 export default {
   components: { pop },
+  mixins: [loginMpWx],
   data () {
     return {
       title: 'Hello'
@@ -33,14 +35,7 @@ export default {
 
   },
   methods: {
-    async showLogin () {
-      // const code = await wxLogin();
-      // const res = await myRequest('wxlogin', code)
-      // console.log(res)
 
-      this.$refs.pop.show();
-
-    }
   }
 }
 </script>
@@ -66,5 +61,6 @@ export default {
   font-size: 2vh;
   text-align: center;
   line-height: 8vh;
+  border-radius: 0px;
 }
 </style>

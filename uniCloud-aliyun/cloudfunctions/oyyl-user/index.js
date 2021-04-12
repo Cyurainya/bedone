@@ -14,6 +14,7 @@ exports.main = async(event) =>{
 	if(operation === 'loginByWeixin'){
 		//获取openid
 		const res = await mpWxGetSessionKey(data)
+		console.log(res)
 		const {userInfo} = res
 		let {
 			openId,
