@@ -21,10 +21,8 @@
 </template>
 
 <script scoped>
-import pop from '@/components/ming-pop/ming-pop.vue'
 import loginMpWx from '@/utils/login/login-mp.js'
 export default {
-  components: { pop },
   mixins: [loginMpWx],
   data () {
     return {

@@ -2,7 +2,7 @@
 export default {
   onLaunch: function () {
     console.log('App Launch')
-    this.initLogin();
+    this.initLogin()
   },
   onShow: function () {
     console.log('App Show')
@@ -11,8 +11,8 @@ export default {
     console.log('App Hide')
   },
   methods: {
-    async initLogin () {
-      const userInfo = uni.getStorageSync('userInfo');
+    async initLogin() {
+      const userInfo = uni.getStorageSync('userInfo')
       console.log('userInfo-------' + userInfo)
       if (userInfo) {
         this.$store.dispatch('setUserData', userInfo)
@@ -21,7 +21,8 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+@import 'uview-ui/index.scss';
+@import  'uni.scss'
 
-<style>
-/*每个页面公共css */
 </style>

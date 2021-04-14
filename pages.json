@@ -1,19 +1,70 @@
 {
+  "easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
   "pages": [
+	  
     //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
-      "path": "pages/login/login",
+      "path": "pages/todoList/todolist",
       "style": {
-        "navigationBarTitleText": "登录页面"
+        "navigationBarTitleText": "待办"    
       }
     },
     {
-      "path": "pages/index/index",
+      "path": "pages/focus/focus",
       "style": {
-        "navigationBarTitleText": "index主页"
-      }
+        "navigationBarTitleText": "专注"
+      }     
+    },
+   {
+     "path": "pages/studyRoom/studyroom",
+     "style": {
+       "navigationBarTitleText": "自习室"
+     }
+   },
+   {
+    "path": "pages/mine/mine",
+    "style": {
+      "navigationBarTitleText": "我的"
     }
+ } 
+      
   ],
+  "tabBar": {
+    "color":"#a7a7a7",
+    "selectedColor": "#ffc90e",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "iconWidth":"15px",
+    "fontSize":"18px",
+    "list": [  
+      {
+        "pagePath": "pages/todoList/todolist",
+        "text":"待办",
+        "iconPath":"static/tab-icon/list.png",
+        "selectedIconPath":"static/tab-icon/now-list.png"
+      },
+      {
+      "pagePath": "pages/focus/focus",
+      "text":"专注",
+      "iconPath":"static/tab-icon/focus.png",
+      "selectedIconPath":"static/tab-icon/now-focus.png"      
+    },{
+      "pagePath": "pages/studyRoom/studyroom",
+      "text":"自习室"      ,
+      "iconPath":"static/tab-icon/room.png",
+      "selectedIconPath":"static/tab-icon/now-room.png"
+    },
+    {
+      "pagePath": "pages/mine/mine",
+      "text":"我的",
+      "iconPath":"static/tab-icon/me.png",
+      "selectedIconPath":"static/tab-icon/now-me.png"      
+    }
+    
+   ]
+},
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",

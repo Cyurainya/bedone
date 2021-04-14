@@ -4,23 +4,26 @@ export default {
   computed: {
     userId() {
       return this.$store.getters.userId
+    },
+    userInfo() {
+      return this.$store.state.userInfo
     }
   },
   methods: {
     async mpWxLogin(userInfoData) {
       await this.mpWxGetUserInfo(userInfoData)
       this.$util.msg('登陆成功')
-      setTimeout(() => {
-        uni.navigateTo({
-          url: '/pages/index/index',
-          success(res) {
-            console.log(res)
-          },
-          fail(err) {
-            console.log(err)
-          }
-        })
-      }, 1000)
+      // setTimeout(() => {
+      //   uni.navigateTo({
+      //     url: '/pages/index/index',
+      //     success(res) {
+      //       console.log(res)
+      //     },
+      //     fail(err) {
+      //       console.log(err)
+      //     }
+      //   })
+      // }, 1000)
     },
     // 获取用户信息
     mpWxGetUserInfo(userInfoData) {
@@ -53,10 +56,15 @@ export default {
             resolve(res.userInfo)
           }
         })
-      }).then(userInfo => {
-        this.$store.dispatch('setUserData', userInfo)
-        return userInfo
       })
+        .then(userInfo => {
+          this.$store.dispatch('setUserData', userInfo)
+
+          return userInfo
+        })
+        .then(() => {
+          console.log(this.$store.getters)
+        })
     },
     async updateUserInfo() {
       // 获取用户信息
