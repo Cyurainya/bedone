@@ -13,16 +13,27 @@ export default {
   methods: {
     async initLogin() {
       const userInfo = uni.getStorageSync('userInfo')
-      console.log('userInfo-------' + userInfo)
       if (userInfo) {
         this.$store.dispatch('setUserData', userInfo)
+      } else {
+        this.$util.msg('请先登录')
+        setTimeout(() => {
+          uni.switchTab({
+            url: '/pages/mine/mine',
+            success(res) {
+              console.log(res)
+            },
+            fail(err) {
+              console.log(err)
+            },
+          })
+        }, 1000)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">
 @import 'uview-ui/index.scss';
-@import  'uni.scss'
-
+@import 'uni.scss';
 </style>

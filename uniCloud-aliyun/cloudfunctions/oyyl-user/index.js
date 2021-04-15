@@ -57,7 +57,7 @@ exports.main = async(event) =>{
 				}
 			}
 		}
-	}else if(operation === 'updataUserInfo'){
+	}else if(operation === 'updateUserInfo'){
 		//更新用户信息
 		const {
 			id,

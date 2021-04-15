@@ -3,10 +3,11 @@ import App from './App'
 import store from './store'
 import * as util from './utils/utils'
 import uView from 'uview-ui'
+import request from './utils/request/request'
 
 Vue.prototype.$util = util
 Vue.prototype.$store = store
-
+Vue.prototype.$request = request
 Vue.config.productionTip = false
 
 Vue.use(uView)

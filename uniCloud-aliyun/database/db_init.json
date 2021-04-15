@@ -1,16 +1,7 @@
 // 在本文件中可配置云数据库初始化，数据格式见：https://uniapp.dcloud.io/uniCloud/hellodb?id=db-init
 // 编写完毕后对本文件点右键，可按配置规则创建表和添加数据
-{
-	"article":{
-		"data":[{
-			"title":"博美",
-			"cover":"https://www.google.com.hk/url?sa=i&url=https%3A%2F%2Fwww.ivsky.com%2Ftupian%2Fbaise_xiaogou_v49081%2Fpic_773703.html&psig=AOvVaw3XcgLKYzy_eWXHeQhl5ZWz&ust=1618128930412000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCNDo6pKe8-8CFQAAAAAdAAAAABAD"
-		},
-		{
-			"title":"小柴",
-			"cover":"https://www.google.com.hk/url?sa=i&url=https%3A%2F%2Fmemes.tw%2Fwtf%2F374887&psig=AOvVaw3XcgLKYzy_eWXHeQhl5ZWz&ust=1618128930412000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCNDo6pKe8-8CFQAAAAAdAAAAABAO"
-		}
-		]
-	},
-	"context":{}
-}
+
+{
+	"oyyl-user": {},
+	"task-data":{}
+}
