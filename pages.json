@@ -35,9 +35,9 @@
     "color":"#a7a7a7",
     "selectedColor": "#ffc90e",
     "borderStyle": "white",
-    "backgroundColor": "#ffffff",
-    "iconWidth":"15px",
-    "fontSize":"18px",
+    "backgroundColor": "#ffffff", 
+    "disableScroll": true,
+    "navigationBarShadow":"#ffc90e",
     "list": [  
       {
         "pagePath": "pages/todoList/todolist",
