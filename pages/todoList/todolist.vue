@@ -62,10 +62,11 @@
                 @change="changeDate"></u-calendar>
     <view>
       <u-collapse :head-style="itemStyle">
-        <u-collapse-item title="已完成"
+        <u-collapse-item title="过期/已完成事件"
                          class="todolist complete"
-                         v-show="completeList.length > 0">
-          <u-swipe-action :show="item.show"
+                         v-if="completeList.length > 0">
+
+          <u-swipe-action :show="item.showSwipe"
                           :index="index"
                           v-for="(item, index) in completeList"
                           :key="item.id"
@@ -73,8 +74,10 @@
                           @open="openComplete"
                           :options="optionsComple">
             <view class="complete-item u-border-bottom">
-              <view class="title-wrap">
+              <view class="title-wrap"
+                    style="display:flex;justify-content: space-between;">
                 <text class="complete-title">{{item.title}}</text>
+                <text>{{item.time}}</text>
               </view>
             </view>
           </u-swipe-action>
@@ -82,7 +85,13 @@
       </u-collapse>
 
       <view class="todolist about">
-        待完成
+        <view>
+          今天待完成
+        </view>
+        <view>
+          {{today}}
+        </view>
+
       </view>
       <u-swipe-action :show="item.showSwipe"
                       :index="index"
@@ -115,69 +124,62 @@
         </view>
 
       </u-swipe-action>
+
+      <u-collapse :head-style="itemStyle">
+        <u-collapse-item title="后续日程"
+                         class="todolist complete"
+                         v-if="laterList.length > 0">
+          <u-swipe-action :show="item.showSwipe"
+                          :index="index"
+                          v-for="(item, index) in laterList"
+                          :key="item.id"
+                          @click="click"
+                          @open="open"
+                          :options="options"
+                          style="width:100vw;background-color:yellow">
+
+            <view class="title-wrap">
+              <view class="insideBox">
+
+                <view class="nameBox">
+
+                  <view class="title">
+
+                    {{item.title}}
+                  </view>
+                  <view class="detail">
+                    <view>{{item.detail}}</view>
+                    <view>{{item.time}}</view>
+                  </view>
+                </view>
+              </view>
+
+            </view>
+
+          </u-swipe-action>
+        </u-collapse-item>
+      </u-collapse>
     </view>
+
     <view>
-      <image src="/static/add.png"
-             mode=""
-             class="addBtn"
-             @click="addTask('add')" />
+      <view @click="addTask('add')"
+            class="addBtn">
+        +
+      </view>
+
     </view>
   </view>
 </template>
 
 <script>
+import { request } from '@/utils/request/request.js'
+
 export default {
   data() {
     return {
-      list: [
-        {
-          id: 1,
-          title: '完成原型',
-          detail: '搞掂晒',
-          userId: '6072ba34c1a7260001d8dbed',
-          time: '2021-04-16',
-          checkBox: false,
-          showSwipe: false,
-        },
-        {
-          id: 2,
-          title: '完成数据库',
-          detail: '搞掂晒',
-          userId: '6072ba34c1a7260001d8dbed',
-          time: '2021-04-17',
-          checkBox: false,
-          showSwipe: false,
-        },
-        {
-          id: 3,
-          title: '完成list',
-          detail: '搞掂晒',
-          userId: '6072ba34c1a7260001d8dbed',
-          time: '2021-04-19',
-          checkBox: false,
-          showSwipe: false,
-        },
-        {
-          id: 4,
-          title: '完成界面',
-          detail: '搞掂晒',
-          userId: '6072ba34c1a7260001d8dbed',
-          time: '',
-          checkBox: false,
-          showSwipe: false,
-        },
-      ],
-      completeList: [
-        {
-          id: 4,
-          title: '完成啦',
-          detail: '搞掂晒',
-          userId: '6072ba34c1a7260001d8dbed',
-          time: '2021-04-20',
-          checkBox: false,
-          showSwipe: false,
-        },
-      ],
+      list: [], //今天待办的任务
+      completeList: [], //当前用户的已完成或者过期的任务
+      laterList: [], //后续待办的任务
       options: [
         {
           text: '编辑',
@@ -221,10 +223,11 @@ export default {
       },
       itemStyle: {
         backgroundColor: '#ffc90e80',
-        color: 'white',
+        color: '#ffc90e',
         textAlign: 'center !important',
         lineHeight: '5vh',
         height: '5vh',
+        borderBottom: '1px solid #ffc90e',
       },
     }
   },
@@ -233,6 +236,9 @@ export default {
     setTimeout(() => {
       this.loading = false
     }, 2000)
+  },
+  mounted() {
+    //this.getTask()
   },
   computed: {
     today() {
@@ -244,16 +250,52 @@ export default {
       dd.setDate(dd.getDate() + 1)
       return this.$u.timeFormat(dd, 'yyyy-mm-dd')
     },
+    userId() {
+      return this.$store.getters.userId
+    },
   },
   methods: {
-    checkboxChange(index) {
-      //已完成
-      this.completeList.push(this.list[index])
-      this.list.splice(index, 1)
-      this.$refs.uToast.show({
-        title: '已完成',
-        type: 'success',
+    async getTask() {
+      //获取所有task
+      const res = await request('task', 'getTask', {
+        userId: this.userId,
       })
+      //对拿到的数据进行处理
+
+      //当前用户的已完成或者过期的任务
+      res.data.map((item) => {
+        if (item.time < this.today || item.checkBox == true) {
+          this.completeList.push(item)
+        }
+      })
+      console.log(this.completeList.length)
+      //今天待办的任务
+      res.data.map((item) => {
+        if (item.time === this.today && !item.checkBox) {
+          this.list.push(item)
+        }
+      })
+      //后续待办的任务
+      res.data.map((item) => {
+        if (item.time > this.today) {
+          this.laterList.push(item)
+        }
+      })
+    },
+
+    async checkboxChange(index) {
+      //已完成
+      const res = await request('task', 'checkTask', {
+        id: this.list[index]._id,
+      })
+      if (res.status == 1) {
+        this.completeList.push(this.list[index])
+        this.list.splice(index, 1)
+        this.$refs.uToast.show({
+          title: '已完成',
+          type: 'success',
+        })
+      }
     },
     addTask(taskOpera) {
       this.taskOperation = taskOpera
@@ -274,7 +316,6 @@ export default {
         this.selectTag = 'noSet'
         this.selectTask.time = ''
       }
-      console.log(this.selectTask.time)
     },
     changeDate(e) {
       console.log(e)
@@ -302,8 +343,7 @@ export default {
         //编辑
         this.list[index].show = false
         this.taskOperation = 'edit'
-        let selectTask = this.list[index]
-        this.selectTask = selectTask
+        this.selectTask = this.list[index] //已经获得当前task信息 没必要再做一次请求了
         this.showTask = true
         if (this.selectTask.time == this.today) {
           this.selectTag = 'today'
@@ -325,39 +365,90 @@ export default {
         if (index != idx) this.list[idx].showSwipe = false
       })
     },
-    taskEdit() {
-      this.selectTask.userId = this.$store.getters.userId
-      this.selectTask.checkBox = false
-      this.selectTask.swipe = false
-      this.selectTask.time = this.today
+    async taskEdit() {
       if (this.taskOperation == 'add') {
         //添加完成
-        this.selectTask.id = this.list.length + 1 //不用传进数据库
-        this.selectTask.checkBox = false
-        this.selectTask.swipe = false
-        this.list.push(this.selectTask)
+        const res = await request('task', 'addTask', {
+          title: this.selectTask.title,
+          detail: this.selectTask.detail,
+          userId: this.userId,
+          time: this.selectTask.time,
+        })
+        if (res.status == 1) {
+          this.$refs.uToast.show({
+            title: '编辑成功',
+            type: 'success',
+          })
+          //如果是后续事件的话需要改界面
+          this.getTask()
+        } else if (res.status == 0) {
+          this.$refs.uToast.show({
+            title: '编辑失败',
+            type: 'error',
+          })
+        }
       } else {
         //编辑完成
-        let id = this.selectTask.id
-        this.list.map((val, idx) => {
-          if (val.id === id) {
-            this.list[idx] = this.selectTask
-            this.list[idx].show = false
-          }
+        const res = request('task', 'editTask', {
+          title: this.selectTask.title,
+          detail: this.selectTask.detail,
+          time: this.selectTask.time,
+          _id: this.selectTask._id,
         })
+        if (res.status == 1) {
+          this.$refs.uToast.show({
+            title: '编辑成功',
+            type: 'success',
+          })
+          this.list.map((val, idx) => {
+            if (val._id === _id) {
+              this.list[idx] = this.selectTask
+              this.list[idx].show = false
+            }
+          })
+          //如果是后续事件的话需要改界面
+          this.getTask()
+        } else if (res.status == 0) {
+          this.$refs.uToast.show({
+            title: '编辑失败',
+            type: 'error',
+          })
+        }
       }
       this.showTask = false
     },
-    clickComplete(index) {
+    async clickComplete(index) {
       //撤销已完成
-      this.list.push(this.completeList[index])
-      this.completeList.splice(index, 1)
-      this.$refs.uToast.show({
-        title: '撤销成功',
-        type: 'success',
+      //要将checkbox重置为false 且撤销当前的list 以及触发云函数
+      const res = await request('task', 'revokeTask', {
+        _id: this.completeList[index]._id,
       })
+      if (res.status == 1) {
+        let time = this.completeList[index].time
+        this.completeList[index].checkBox = false
+        if (time == this.today) {
+          debugger
+          this.list.push(this.completeList[index])
+        } else if (time > this.today) {
+          debugger
+          this.laterList.push(this.completeList[index])
+        }
+
+        this.completeList.splice(index, 1)
+
+        this.$refs.uToast.show({
+          title: '撤销成功',
+          type: 'success',
+        })
+      } else if (res.status == 0) {
+        this.$refs.uToast.show({
+          title: '编辑失败',
+          type: 'error',
+        })
+      }
     },
     openComplete(index) {
+      //撤销打开
       this.completeList[index].showSwipe = true
       this.completeList.map((val, idx) => {
         if (index != idx) this.list[idx].showSwipe = false
@@ -368,11 +459,22 @@ export default {
 </script>
 <style scoped lang="scss">
 .addBtn {
-  position: absolute;
-  width: 18vw;
-  height: 18vw;
+  position: fixed;
+  width: 16vw;
+  height: 16vw;
   right: 5vw;
-  bottom: 10vh;
+  bottom: 5vw;
+  border: 1px solid #ffc90e;
+  -webkit-border-radius: 18vw;
+  border-radius: 18vw;
+  background-color: #ffc90e;
+  text-align: center;
+  line-height: 14vw;
+  font-size: 10vw;
+  color: white;
+}
+.addBtn :hover {
+  box-shadow: 0 8px 16px 0 #e6e6e6, 0 6px 20px 0 #e6e6e6;
 }
 .nameBox {
   display: flex;
@@ -386,6 +488,10 @@ export default {
 }
 .detail {
   color: grey;
+  display: flex;
+  view {
+    padding-right: 3vw;
+  }
 }
 .popView {
   padding: 3vw;
@@ -461,7 +567,10 @@ export default {
   line-height: 5vh;
 }
 .about {
-  background-color: rgba($color: #007aff, $alpha: 0.5);
+  background-color: #ffc90e80;
+  display: flex;
+  justify-content: space-between;
+  color: #ffc90e;
 }
 .complete-item {
   height: 6vh;

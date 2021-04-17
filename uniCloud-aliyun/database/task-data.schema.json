@@ -1,0 +1,51 @@
+{
+	"bsonType": "object",
+	"required": ["title", "userId"],
+	"permission": {
+		"read": false,
+		"create": false,
+		"update": false,
+		"delete": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"title": {
+			"title": "title",
+			"bsonType": "string",
+			"description": "task标题",
+			"trim": "both"
+		},
+		"detail": {
+			"title": "detail",
+			"bsonType": "number",
+			"description": "task详情",
+			"trim": "both"
+		},
+		"userId": {
+			"title": "detail",
+			"bsonType": "string",
+			"description": "task详情",
+			"trim": "both"
+		},
+		"time": {
+			"title": "time",
+			"bsonType": "string",
+			"description": "task日期",
+			"trim": "both"
+		},
+		"checkBox": {
+			"title": "checkBox",
+			"bsonType": "bool",
+			"defaultValue": false,
+			"description": "task chekcBox"
+		},
+		"showSwipe": {
+			"title": "showSwipe",
+			"bsonType": "bool",
+			"defaultValue": false,
+			"description": "task showSwipe"
+		}
+	}
+}

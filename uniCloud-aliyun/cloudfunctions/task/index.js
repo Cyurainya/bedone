@@ -1,45 +1,92 @@
 'use strict';
 
+const { title } = require("node:process");
+
 const db = uniCloud.database();
 const collection = db.collection('task-data');
+const dbCmd = db.command
 
 exports.main = async (event, context) => {
 	const {
 		operation,
 		data
 	} = event;
-	if(operation == 'searchTask'){
-    let {
-      title,
-      detail,
-      date,
-      duration,
-      userId
-    } = data
-		const newTask = await collection.add({
-      title,
-      detail,
-      date,
-      duration,
-      userId
+   
+  if(operation == 'getTask'){
+     //返回当前所有task
+     const completeList = await collection.where(
+      {userId :  data.userId}
+     ).get()
+     return {
+      data:{
+        status:1,
+        data:completeList.data
+      }
+    }
+  }else if(operation == 'checkTask'){
+    //某个task已完成
+     //撤销某个task的完成
+     await collection.doc(data._id).update({
+      checkBox:true
+      })
+      return {
+        data:{
+          status:1,
+          data:'check成功',
+        }
+      }
+  }else if(operation == 'revokeTask'){
+    //撤销某个task的完成
+    await collection.doc(data._id).update({
+    checkBox:false
     })
     return {
       data:{
         status:1,
-        task:{
-          title,
-          detail,
-          date,
-          duration,
-          userId
-        }
+        data:'撤销成功',
       }
     }
-	}else if(operation == 'addTask'){
-		
-	}else if(operation == 'editTask'){
-		
-	}
+  }else if(operation == 'editTask'){
+    //编辑当前task
+    await collection.doc(data._id).update({
+      title: data.title,
+      detail: data.detail,
+      time: data.time,
+    })
+    return {
+      data:{
+        status:1,
+        data:'编辑成功',
+      }
+    }
+  }else if(operation == 'deleteTask'){
+     //删除某个task
+
+  }else if(operation == 'addTask'){
+    //添加某个task
+    await collection.add({
+      title:data.title,
+      detail:data.detail,
+      userId:data.userId,
+      time:data.time,
+      checkBox:false,
+      showSwipe:false
+    })
+    return {
+      data:{
+        status:1,
+        data:'添加成功',
+      }
+    }
+  }
+ 
+  
+
 	//返回数据给客户端
-	return event
+	return {
+    data:{
+      status:0,
+      data:'获取数据失败'
+    }
+  }
 };
