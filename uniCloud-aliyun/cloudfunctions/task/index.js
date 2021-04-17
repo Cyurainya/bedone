@@ -1,7 +1,4 @@
 'use strict';
-
-const { title } = require("node:process");
-
 const db = uniCloud.database();
 const collection = db.collection('task-data');
 const dbCmd = db.command
@@ -61,6 +58,13 @@ exports.main = async (event, context) => {
     }
   }else if(operation == 'deleteTask'){
      //删除某个task
+     await collection.doc(data._id).remove()
+     return {
+      data:{
+        status:1,
+        data:'删除成功',
+      }
+     }
 
   }else if(operation == 'addTask'){
     //添加某个task
@@ -80,8 +84,6 @@ exports.main = async (event, context) => {
     }
   }
  
-  
-
 	//返回数据给客户端
 	return {
     data:{

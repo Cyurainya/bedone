@@ -1,7 +1,6 @@
 
 <template>
   <view>
-
     <u-skeleton :loading="loading"
                 :animation="true"
                 bgColor="#FFF"></u-skeleton>
@@ -133,8 +132,8 @@
                           :index="index"
                           v-for="(item, index) in laterList"
                           :key="item.id"
-                          @click="click"
-                          @open="open"
+                          @click="clickLater"
+                          @open="openLater"
                           :options="options"
                           style="width:100vw;background-color:yellow">
 
@@ -238,7 +237,7 @@ export default {
     }, 2000)
   },
   mounted() {
-    //this.getTask()
+    this.getTask()
   },
   computed: {
     today() {
@@ -260,8 +259,10 @@ export default {
       const res = await request('task', 'getTask', {
         userId: this.userId,
       })
-      //对拿到的数据进行处理
-
+      //清空
+      this.list = [] //今天待办的任务
+      this.completeList = [] //当前用户的已完成或者过期的任务
+      this.laterList = [] //后续待办的任务
       //当前用户的已完成或者过期的任务
       res.data.map((item) => {
         if (item.time < this.today || item.checkBox == true) {
@@ -280,6 +281,10 @@ export default {
         if (item.time > this.today) {
           this.laterList.push(item)
         }
+      })
+      //对后续任务进行事件排序
+      this.laterList.reduce((a, b) => {
+        return a.time - b.time
       })
     },
 
@@ -321,24 +326,51 @@ export default {
       console.log(e)
       this.selectTask.time = e.result
     },
-    deleteTask(title, id) {
-      this.deleteShow = true
-      this.deleTitle = title
-      this.deleId = id
-    },
-    deleteComfir(id) {
-      this.deleteShow = false
-      console.log(id)
-    },
-    click(index, index1) {
+    async clickLater(index, index1) {
       if (index1 == 1) {
-        this.deleteShow = true
-        this.list.splice(index, 1)
-        this.$refs.uTips.show({
-          title: '删除成功',
-          type: 'success',
-          duration: '2300',
+        const res = await request('task', 'deleteTask', {
+          _id: this.laterList[index]._id,
         })
+        if (res.status == 1) {
+          this.laterList.splice(index, 1)
+          this.$refs.uTips.show({
+            title: '删除成功',
+            type: 'success',
+            duration: '2300',
+          })
+        }
+      } else {
+        //编辑
+        this.laterList[index].show = false
+        this.taskOperation = 'edit'
+        this.selectTask = this.laterList[index] //已经获得当前task信息 没必要再做一次请求了
+        this.showTask = true
+        if (this.selectTask.time == this.today) {
+          this.selectTag = 'today'
+        } else if (this.selectTask.time == this.tomorrow) {
+          this.selectTag = 'tomorrow'
+        } else if (this.selectTask.time.length === 0) {
+          this.selectTag = 'noSet'
+        } else {
+          this.selectTag = 'selectDate'
+          this.dateResult = this.selectTask.time
+        }
+        //然后更改新的 也就更新日期 其实就是tagClick的转换事件
+      }
+    },
+    async click(index, index1) {
+      if (index1 == 1) {
+        const res = await request('task', 'deleteTask', {
+          _id: this.list[index]._id,
+        })
+        if (res.status == 1) {
+          this.list.splice(index, 1)
+          this.$refs.uTips.show({
+            title: '删除成功',
+            type: 'success',
+            duration: '2300',
+          })
+        }
       } else {
         //编辑
         this.list[index].show = false
@@ -365,6 +397,12 @@ export default {
         if (index != idx) this.list[idx].showSwipe = false
       })
     },
+    openLater(index) {
+      this.laterList[index].showSwipe = true
+      this.laterList.map((val, idx) => {
+        if (index != idx) this.laterList[idx].showSwipe = false
+      })
+    },
     async taskEdit() {
       if (this.taskOperation == 'add') {
         //添加完成
@@ -376,14 +414,14 @@ export default {
         })
         if (res.status == 1) {
           this.$refs.uToast.show({
-            title: '编辑成功',
+            title: '添加成功',
             type: 'success',
           })
           //如果是后续事件的话需要改界面
           this.getTask()
         } else if (res.status == 0) {
           this.$refs.uToast.show({
-            title: '编辑失败',
+            title: '添加失败',
             type: 'error',
           })
         }
@@ -553,12 +591,12 @@ export default {
 }
 .title-wrap {
   display: flex;
+  padding: 1vh 0;
 }
 .insideBox {
   display: flex;
   align-items: center;
-  padding: 4vh;
-  padding-top: 2vh;
+  padding-left: 2vw;
 }
 .todolist {
   height: 5vh;
