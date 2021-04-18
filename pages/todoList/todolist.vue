@@ -167,6 +167,7 @@
       </view>
 
     </view>
+
   </view>
 </template>
 
@@ -617,5 +618,10 @@ export default {
 }
 .complete-title {
   text-decoration: line-through;
+}
+.calendar-image {
+  position: fixed;
+  left: 5vw;
+  bottom: 5vw;
 }
 </style>

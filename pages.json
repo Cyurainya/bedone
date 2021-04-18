@@ -3,20 +3,20 @@
 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 	},
   "pages": [
-	  
-    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-    {
-      "path": "pages/todoList/todolist",
-      "style": {
-        "navigationBarTitleText": "待办"    
-      }
-    },
     {
       "path": "pages/focus/focus",
       "style": {
         "navigationBarTitleText": "专注"
       }     
     },
+    {
+      "path": "pages/todoList/todolist",
+      "style": {
+        "navigationBarTitleText": "待办"    
+      }
+    },
+      
+   
    {
      "path": "pages/studyRoom/studyroom",
      "style": {
@@ -39,24 +39,21 @@
     "list": [  
       {
         "pagePath": "pages/todoList/todolist",
-
         "iconPath":"static/tab-icon/list.png",
         "selectedIconPath":"static/tab-icon/now-list.png"
       },
       {
       "pagePath": "pages/focus/focus",
-
       "iconPath":"static/tab-icon/focus.png",
       "selectedIconPath":"static/tab-icon/now-focus.png"      
-    },{
+    },
+    {
       "pagePath": "pages/studyRoom/studyroom",
-
       "iconPath":"static/tab-icon/room.png",
       "selectedIconPath":"static/tab-icon/now-room.png"
     },
     {
       "pagePath": "pages/mine/mine",
-
       "iconPath":"static/tab-icon/me.png",
       "selectedIconPath":"static/tab-icon/now-me.png"      
     }
