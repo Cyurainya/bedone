@@ -81,8 +81,9 @@
 </template>
 
 <script>
+import { request } from '@/utils/request/request.js'
 export default {
-  data() {
+  data () {
     return {
       showSelect: false,
       minute: 25,
@@ -98,22 +99,40 @@ export default {
     }
   },
   watch: {
-    value(newVal, oldVal) {
+    value (newVal, oldVal) {
+      //在changing事件里面触发会卡顿
       this.minute =
         newVal.toString().length == 2 ? newVal : '0' + newVal.toString()
     },
   },
+  computed: {
+    today () {
+      let d = new Date()
+      return this.$u.timeFormat(d, 'yyyy-mm-dd')
+    },
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
+  },
   methods: {
-    setTime() {
+    async requestTimer (finishTick) {
+      await request('focus', 'focus', {
+        day: this.today,
+        userId: this.$store.getters.userId,
+        finish: finishTick,
+        duration: (typeof this.minute) == Number ? this.minute.toString() : this.minute.toString().slice(1, 2)
+      })
+    },
+    setTime () {
       this.showSelect = true
     },
-    changNum(e) {
+    changNum (e) {
       this.value = e.detail.value
     },
-    hideShow() {
+    hideShow () {
       this.showSelect = false
     },
-    clock() {
+    clock () {
       if (!this.begin) {
         //开始啦
         this.begin = true
@@ -140,9 +159,14 @@ export default {
             this.sumTime = 0
             this.minute = 25
             this.begin = false
+
             this.btnType = 'warning'
             this.finish = true
+
+
             clearInterval(this.timer)
+            //触发请求  
+            this.requestTimer(true)
           }
         }, 1000)
       } else {
@@ -150,13 +174,15 @@ export default {
         this.stop = true
       }
     },
-    cancelStop() {
+
+    cancelStop () {
       //坚持下去
       this.stop = false
     },
-    confirmStop() {
+    async confirmStop () {
       //强行结束
-
+      //触发请求
+      this.requestTimer(false)
       //结束定时器
       clearInterval(this.timer)
       this.second = '00'
@@ -166,8 +192,9 @@ export default {
       this.btnType = 'warning'
       //关闭弹窗
       this.stop = false
+
     },
-    hideFinish() {
+    hideFinish () {
       this.finish = false
     },
   },
