@@ -1,65 +1,63 @@
 {
   "easycom": {
-		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
-	},
+    "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+  },
   "pages": [
+    {
+      "path": "pages/todoList/todolist",
+      "style": {
+        "navigationBarTitleText": "待办",
+        "navigationStyle": "custom"
+      }
+    },
     {
       "path": "pages/focus/focus",
       "style": {
         "navigationBarTitleText": "专注"
-      }     
-    },
-    {
-      "path": "pages/todoList/todolist",
-      "style": {
-        "navigationBarTitleText": "待办"    
       }
     },
-      
-   
-   {
-     "path": "pages/studyRoom/studyroom",
-     "style": {
-       "navigationBarTitleText": "自习室"
-     }
-   },
-   {
-    "path": "pages/mine/mine",
-    "style": {
-      "navigationBarTitleText": "我的"
+
+    {
+      "path": "pages/studyRoom/studyroom",
+      "style": {
+        "navigationBarTitleText": "自习室"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
     }
- } 
-      
   ],
   "tabBar": {
-    "color":"#a7a7a7",
+    "color": "#a7a7a7",
     "selectedColor": "#ffc90e",
     "borderStyle": "white",
-    "backgroundColor": "#ffffff", 
-    "list": [  
+    "backgroundColor": "#ffffff",
+    "list": [
       {
         "pagePath": "pages/todoList/todolist",
-        "iconPath":"static/tab-icon/list.png",
-        "selectedIconPath":"static/tab-icon/now-list.png"
+        "iconPath": "static/tab-icon/list.png",
+        "selectedIconPath": "static/tab-icon/now-list.png"
       },
       {
-      "pagePath": "pages/focus/focus",
-      "iconPath":"static/tab-icon/focus.png",
-      "selectedIconPath":"static/tab-icon/now-focus.png"      
-    },
-    {
-      "pagePath": "pages/studyRoom/studyroom",
-      "iconPath":"static/tab-icon/room.png",
-      "selectedIconPath":"static/tab-icon/now-room.png"
-    },
-    {
-      "pagePath": "pages/mine/mine",
-      "iconPath":"static/tab-icon/me.png",
-      "selectedIconPath":"static/tab-icon/now-me.png"      
-    }
-    
-   ]
-},
+        "pagePath": "pages/focus/focus",
+        "iconPath": "static/tab-icon/focus.png",
+        "selectedIconPath": "static/tab-icon/now-focus.png"
+      },
+      {
+        "pagePath": "pages/studyRoom/studyroom",
+        "iconPath": "static/tab-icon/room.png",
+        "selectedIconPath": "static/tab-icon/now-room.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "iconPath": "static/tab-icon/me.png",
+        "selectedIconPath": "static/tab-icon/now-me.png"
+      }
+    ]
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",

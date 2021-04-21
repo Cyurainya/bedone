@@ -21,8 +21,6 @@ exports.main = async (event, context) => {
       }
     }
   }else if(operation == 'checkTask'){
-    //某个task已完成
-     //撤销某个task的完成
      await collection.doc(data._id).update({
       checkBox:true
       })

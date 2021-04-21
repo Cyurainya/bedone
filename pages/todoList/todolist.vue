@@ -60,63 +60,50 @@
                 max-date="2222-01-01"
                 @change="changeDate"></u-calendar>
     <view>
-      <u-collapse :head-style="itemStyle">
-        <u-collapse-item title="过期/已完成事件"
-                         class="todolist complete"
-                         v-if="completeList.length > 0">
-
-          <u-swipe-action :show="item.showSwipe"
-                          :index="index"
-                          v-for="(item, index) in completeList"
-                          :key="item.id"
-                          @click="clickComplete"
-                          @open="openComplete"
-                          :options="optionsComple">
-            <view class="complete-item u-border-bottom">
-              <view class="title-wrap"
-                    style="display:flex;justify-content: space-between;">
-                <text class="complete-title">{{item.title}}</text>
-                <text>{{item.time}}</text>
-              </view>
-            </view>
-          </u-swipe-action>
-        </u-collapse-item>
-      </u-collapse>
-
-      <view class="todolist about">
-        <view>
-          今天待完成
+      <view class="nav-bar"
+            :style="{height:navBarHeight + 'px',paddingTop:navTop + 'px',paddingBottom:navPaddingBottom + 'px'}">
+        <view class="navbtn">
+          <u-icon name="calendar-fill"
+                  color="#000000"
+                  size='55'></u-icon>
         </view>
+        <text>
+          待办
+        </text>
+
+      </view>
+      <view class="todolist about"
+            v-if="expiredList.length > 0">
         <view>
-          {{today}}
+          过期日程
         </view>
 
       </view>
+
       <u-swipe-action :show="item.showSwipe"
                       :index="index"
-                      v-for="(item, index) in list"
-                      :key="item.id"
+                      v-for="(item, index) in expiredList"
+                      :key="item._id"
                       @click="click"
-                      @open="open"
-                      :options="options"
-                      style="width:100vw;background-color:yellow">
+                      @open="open(index,'expired')"
+                      :options="options">
+        <view class="swipeView">
+          <u-checkbox @change="checkboxChange('expired',index,item.checkBox)"
+                      v-model="item.checkBox"
+                      active-color="#ffc90e"
+                      :name="index"
+                      class="checkBox">
 
-        <view class="title-wrap">
-          <view class="insideBox">
-            <u-checkbox @change="checkboxChange(index)"
-                        v-model="item.checkBox"
-                        :name="item.title"
-                        active-color="#ffc90e"
-                        class="checkbox"
-                        size=50>
+          </u-checkbox>
+          <view class="nameBox"
+                :style="{textDecoration:item.checkBox?'line-through':'none'}">
 
-            </u-checkbox>
-            <view class="nameBox">
+            <view class="title">
+              {{item.title}}
+            </view>
+            <view class="detail">{{item.detail}}
+              <text style="color:red;padding:0 3vw">{{item.time}}</text>
 
-              <view class="title">
-                {{item.title}}
-              </view>
-              <view class="detail">{{item.detail}}</view>
             </view>
           </view>
 
@@ -124,6 +111,38 @@
 
       </u-swipe-action>
 
+      <view class="todolist about">
+        <view>
+          今日日程
+        </view>
+
+      </view>
+      <u-swipe-action :show="item.showSwipe"
+                      :index="index"
+                      v-for="(item, index) in list"
+                      :key="item._id"
+                      @click="click"
+                      @open="open(index,'list')"
+                      :options="options">
+        <view class="swipeView">
+          <u-checkbox @change="checkboxChange('list',index,item.checkBox)"
+                      v-model="item.checkBox"
+                      active-color="#ffc90e"
+                      :name="index"
+                      class="checkBox">
+
+          </u-checkbox>
+          <view class="nameBox"
+                :style="{textDecoration:item.checkBox?'line-through':'none'}">
+
+            <view class="title">
+              {{item.title}}
+            </view>
+            <view class="detail">{{item.detail}}</view>
+          </view>
+        </view>
+
+      </u-swipe-action>
       <u-collapse :head-style="itemStyle">
         <u-collapse-item title="后续日程"
                          class="todolist complete"
@@ -131,25 +150,27 @@
           <u-swipe-action :show="item.showSwipe"
                           :index="index"
                           v-for="(item, index) in laterList"
-                          :key="item.id"
-                          @click="clickLater"
-                          @open="openLater"
-                          :options="options"
-                          style="width:100vw;background-color:yellow">
+                          :key="item._id"
+                          @click="click"
+                          @open="open(index,'later')"
+                          :options="options">
+            <view class="swipeView">
+              <u-checkbox @change="checkboxChange('later',index,item.checkBox)"
+                          v-model="item.checkBox"
+                          active-color="#ffc90e"
+                          :name="index"
+                          class="checkBox">
 
-            <view class="title-wrap">
-              <view class="insideBox">
+              </u-checkbox>
+              <view class="nameBox"
+                    :style="{textDecoration:item.checkBox?'line-through':'none'}">
 
-                <view class="nameBox">
+                <view class="title">
+                  {{item.title}}
+                </view>
+                <view class="detail">{{item.detail}}
+                  <text style="color:red;padding:0 3vw">{{item.time}}</text>
 
-                  <view class="title">
-
-                    {{item.title}}
-                  </view>
-                  <view class="detail">
-                    <view>{{item.detail}}</view>
-                    <view>{{item.time}}</view>
-                  </view>
                 </view>
               </view>
 
@@ -175,10 +196,11 @@
 import { request } from '@/utils/request/request.js'
 
 export default {
-  data() {
+  data () {
     return {
+
       list: [], //今天待办的任务
-      completeList: [], //当前用户的已完成或者过期的任务
+      expiredList: [], //当前用户的已完成或者过期的任务
       laterList: [], //后续待办的任务
       options: [
         {
@@ -194,14 +216,7 @@ export default {
           },
         },
       ],
-      optionsComple: [
-        {
-          text: '撤销',
-          style: {
-            backgroundColor: '#ffc90e',
-          },
-        },
-      ],
+
       showTask: false,
       showCalendar: false,
       calendarMode: 'date',
@@ -229,54 +244,71 @@ export default {
         height: '5vh',
         borderBottom: '1px solid #ffc90e',
       },
+      navBarHeight: 0,//导航栏高度
+      navTop: 0,//胶囊距上边界距离
+      navPaddingBottom: 0,
+      openlist: []
     }
   },
-  onLoad() {
+  onLoad () {
+    //导航栏高度 = 状态栏到胶囊的间距（胶囊距上边界距离-状态栏高度） * 2 + 胶囊高度 + 状态栏高度。
+    const statusBarHeight = uni.getSystemInfoSync().statusBarHeight;//状态栏高度。
+    //console.log('statusBarHeight' + statusBarHeight)
+    const menuButtonInfo = uni.getMenuButtonBoundingClientRect();//胶囊相关信息
+    const menuButtonHeight = menuButtonInfo.height //胶囊高度
+    const menuButtonTop = menuButtonInfo.top//胶囊距上边界距离
+    // console.log('menuButtonHeight' + menuButtonHeight)
+    // console.log('menuButtonTop' + menuButtonTop)
+    this.navBarHeight = (menuButtonTop - statusBarHeight) * 2 + menuButtonHeight + statusBarHeight
+    this.navTop = menuButtonTop;
+    this.navPaddingBottom = menuButtonTop - statusBarHeight
     // 通过延时模拟向后端请求数据，调隐藏骨架屏
     setTimeout(() => {
       this.loading = false
-    }, 2000)
+    }, 2000);
+
   },
-  mounted() {
+  mounted () {
     this.getTask()
   },
   computed: {
-    today() {
+    today () {
       let d = new Date()
       return this.$u.timeFormat(d, 'yyyy-mm-dd')
     },
-    tomorrow() {
+    tomorrow () {
       let dd = new Date()
       dd.setDate(dd.getDate() + 1)
       return this.$u.timeFormat(dd, 'yyyy-mm-dd')
     },
-    userId() {
+    userId () {
       return this.$store.getters.userId
     },
   },
   methods: {
-    async getTask() {
+    async getTask () {
       //获取所有task
       const res = await request('task', 'getTask', {
         userId: this.userId,
       })
       //清空
       this.list = [] //今天待办的任务
-      this.completeList = [] //当前用户的已完成或者过期的任务
+      this.expiredList = [] //当前用户的已完成或者过期的任务
       this.laterList = [] //后续待办的任务
       //当前用户的已完成或者过期的任务
       res.data.map((item) => {
-        if (item.time < this.today || item.checkBox == true) {
-          this.completeList.push(item)
+        if (item.time < this.today && item.checkBox == false) {
+          this.expiredList.push(item)
         }
       })
-      console.log(this.completeList.length)
+      console.log(this.expiredList)
       //今天待办的任务
       res.data.map((item) => {
-        if (item.time === this.today && !item.checkBox) {
+        if (item.time === this.today) {
           this.list.push(item)
         }
       })
+
       //后续待办的任务
       res.data.map((item) => {
         if (item.time > this.today) {
@@ -286,29 +318,45 @@ export default {
       //对后续任务进行事件排序
       this.laterList.reduce((a, b) => {
         return a.time - b.time
-      })
+      }, [])
     },
 
-    async checkboxChange(index) {
-      //已完成
-      const res = await request('task', 'checkTask', {
-        id: this.list[index]._id,
-      })
-      if (res.status == 1) {
-        this.completeList.push(this.list[index])
-        this.list.splice(index, 1)
-        this.$refs.uToast.show({
-          title: '已完成',
-          type: 'success',
+    async checkboxChange (list, index, checked) {
+      if (list == 'list') this.openlist = this.list
+      else if (list == 'expired') this.openlist = this.expiredList
+      else if (list == 'later') this.openlist = this.laterList
+      if (!checked) {
+        //完成事件
+        const res = await request('task', 'checkTask', {
+          _id: this.openlist[index]._id,
         })
+        if (res.status == 1) {
+          this.$refs.uToast.show({
+            title: '已完成',
+            type: 'success',
+          })
+        }
+        if (list == 'expired') {
+          this.openlist.splice(index, 1)
+        }
+      } else {
+        const res = await request('task', 'revokeTask', {
+          _id: this.openlist[index]._id,
+        })
+        if (res.status == 1) {
+          this.$refs.uToast.show({
+            title: '已撤销',
+            type: 'success',
+          })
+        }
       }
     },
-    addTask(taskOpera) {
+    addTask (taskOpera) {
       this.taskOperation = taskOpera
       this.selectTask = {}
       this.showTask = true
     },
-    tagClick(opera) {
+    tagClick (opera) {
       if (opera == 'today') {
         this.selectTag = 'today'
         this.selectTask.time = this.today
@@ -323,17 +371,18 @@ export default {
         this.selectTask.time = ''
       }
     },
-    changeDate(e) {
+    changeDate (e) {
       console.log(e)
       this.selectTask.time = e.result
     },
-    async clickLater(index, index1) {
+    async click (index, index1) {
+
       if (index1 == 1) {
         const res = await request('task', 'deleteTask', {
-          _id: this.laterList[index]._id,
+          _id: this.openlist[index]._id,
         })
         if (res.status == 1) {
-          this.laterList.splice(index, 1)
+          this.openlist.splice(index, 1)
           this.$refs.uTips.show({
             title: '删除成功',
             type: 'success',
@@ -342,41 +391,9 @@ export default {
         }
       } else {
         //编辑
-        this.laterList[index].show = false
+        this.openlist[index].show = false
         this.taskOperation = 'edit'
-        this.selectTask = this.laterList[index] //已经获得当前task信息 没必要再做一次请求了
-        this.showTask = true
-        if (this.selectTask.time == this.today) {
-          this.selectTag = 'today'
-        } else if (this.selectTask.time == this.tomorrow) {
-          this.selectTag = 'tomorrow'
-        } else if (this.selectTask.time.length === 0) {
-          this.selectTag = 'noSet'
-        } else {
-          this.selectTag = 'selectDate'
-          this.dateResult = this.selectTask.time
-        }
-        //然后更改新的 也就更新日期 其实就是tagClick的转换事件
-      }
-    },
-    async click(index, index1) {
-      if (index1 == 1) {
-        const res = await request('task', 'deleteTask', {
-          _id: this.list[index]._id,
-        })
-        if (res.status == 1) {
-          this.list.splice(index, 1)
-          this.$refs.uTips.show({
-            title: '删除成功',
-            type: 'success',
-            duration: '2300',
-          })
-        }
-      } else {
-        //编辑
-        this.list[index].show = false
-        this.taskOperation = 'edit'
-        this.selectTask = this.list[index] //已经获得当前task信息 没必要再做一次请求了
+        this.selectTask = this.openlist[index] //已经获得当前task信息 没必要再做一次请求了
         this.showTask = true
         if (this.selectTask.time == this.today) {
           this.selectTag = 'today'
@@ -392,19 +409,23 @@ export default {
       }
     },
 
-    open(index) {
-      this.list[index].showSwipe = true
-      this.list.map((val, idx) => {
-        if (index != idx) this.list[idx].showSwipe = false
+    open (index, list) {
+      if (list == 'list') this.openlist = this.list
+      else if (list == 'expired') this.openlist = this.expiredList
+      else if (list == 'later') this.openlist = this.laterList
+
+      this.openlist[index].showSwipe = true
+      this.openlist.map((val, idx) => {
+        if (index != idx) this.openlist[idx].showSwipe = false
       })
     },
-    openLater(index) {
+    openLater (index) {
       this.laterList[index].showSwipe = true
       this.laterList.map((val, idx) => {
         if (index != idx) this.laterList[idx].showSwipe = false
       })
     },
-    async taskEdit() {
+    async taskEdit () {
       if (this.taskOperation == 'add') {
         //添加完成
         const res = await request('task', 'addTask', {
@@ -439,14 +460,13 @@ export default {
             title: '编辑成功',
             type: 'success',
           })
-          this.list.map((val, idx) => {
+          this.openlist.map((val, idx) => {
             if (val._id === _id) {
-              this.list[idx] = this.selectTask
-              this.list[idx].show = false
+              this.openlist[idx] = this.selectTask
+              this.openlist[idx].show = false
             }
           })
-          //如果是后续事件的话需要改界面
-          this.getTask()
+
         } else if (res.status == 0) {
           this.$refs.uToast.show({
             title: '编辑失败',
@@ -455,44 +475,8 @@ export default {
         }
       }
       this.showTask = false
-    },
-    async clickComplete(index) {
-      //撤销已完成
-      //要将checkbox重置为false 且撤销当前的list 以及触发云函数
-      const res = await request('task', 'revokeTask', {
-        _id: this.completeList[index]._id,
-      })
-      if (res.status == 1) {
-        let time = this.completeList[index].time
-        this.completeList[index].checkBox = false
-        if (time == this.today) {
-          debugger
-          this.list.push(this.completeList[index])
-        } else if (time > this.today) {
-          debugger
-          this.laterList.push(this.completeList[index])
-        }
+    }
 
-        this.completeList.splice(index, 1)
-
-        this.$refs.uToast.show({
-          title: '撤销成功',
-          type: 'success',
-        })
-      } else if (res.status == 0) {
-        this.$refs.uToast.show({
-          title: '编辑失败',
-          type: 'error',
-        })
-      }
-    },
-    openComplete(index) {
-      //撤销打开
-      this.completeList[index].showSwipe = true
-      this.completeList.map((val, idx) => {
-        if (index != idx) this.list[idx].showSwipe = false
-      })
-    },
   },
 }
 </script>
@@ -521,17 +505,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
 }
-.title {
-  color: black;
-  font-weight: bold;
-}
-.detail {
-  color: grey;
-  display: flex;
-  view {
-    padding-right: 3vw;
-  }
-}
+
 .popView {
   padding: 3vw;
   padding-top: 0;
@@ -549,11 +523,6 @@ export default {
   width: 100%;
   justify-content: space-between;
   align-items: center;
-}
-.now-tabBtn {
-  color: white;
-  background-color: #ffc90e;
-  border-color: #ffc90e;
 }
 .date-tag-now {
   border-radius: 5vw;
@@ -573,32 +542,35 @@ export default {
   padding: 1vh 4vw;
   margin: 1vh 2vw;
 }
-.delete {
-  width: 5vw;
-  height: 5vw;
-}
-.deleteBox {
-  padding: 10vw;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  text {
-    font-weight: bold;
-    font-size: 5vw;
-    margin-top: 3vh;
-  }
-}
-.title-wrap {
+
+.swipeView {
   display: flex;
   padding: 1vh 0;
-}
-.insideBox {
-  display: flex;
+  height: 8vh;
   align-items: center;
   padding-left: 2vw;
+  line-height: auto;
+  .checkBox {
+    height: initial;
+  }
+  .title {
+    color: black;
+    font-weight: 500;
+    line-height: normal;
+    font-size: 3.5vw;
+    font-variant: diagonal-fractions;
+  }
+  .detail {
+    color: grey;
+    display: flex;
+    font-size: 3vw;
+    line-height: normal;
+    view {
+      padding-right: 3vw;
+    }
+  }
 }
+
 .todolist {
   height: 5vh;
   width: 100vw;
@@ -611,17 +583,19 @@ export default {
   justify-content: space-between;
   color: #ffc90e;
 }
-.complete-item {
-  height: 6vh;
-  padding-left: 5vw;
-  line-height: 6vh;
-}
-.complete-title {
-  text-decoration: line-through;
-}
-.calendar-image {
-  position: fixed;
-  left: 5vw;
-  bottom: 5vw;
+
+.nav-bar {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  background-color: rgb(248, 248, 248);
+  font-size: 30rpx;
+  .navbtn {
+    position: absolute;
+    margin-left: 2vw;
+  }
+  text {
+    margin: 0 auto;
+  }
 }
 </style>
