@@ -20,6 +20,19 @@ exports.main = async (event, context) => {
         data:completeList.data
       }
     }
+  }else if(operation == 'getTaskByDay'){
+    const completeList = await collection.where(
+      {
+        userId :  data.userId,
+        time   :  data.time
+      }
+     ).get()
+     return {
+      data:{
+        status:1,
+        data:completeList.data
+      }
+    }
   }else if(operation == 'checkTask'){
      await collection.doc(data._id).update({
       checkBox:true

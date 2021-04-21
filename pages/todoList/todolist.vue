@@ -1,6 +1,10 @@
 
 <template>
   <view>
+    <u-calendar v-model="pageCalendar"
+                min-date="1975-04-15"
+                max-date="2222-01-01"
+                @change="toCalendarPage"></u-calendar>
     <u-skeleton :loading="loading"
                 :animation="true"
                 bgColor="#FFF"></u-skeleton>
@@ -65,7 +69,8 @@
         <view class="navbtn">
           <u-icon name="calendar-fill"
                   color="#000000"
-                  size='55'></u-icon>
+                  size='45'
+                  @click="toDayPage"></u-icon>
         </view>
         <text>
           待办
@@ -194,11 +199,11 @@
 
 <script>
 import { request } from '@/utils/request/request.js'
-
+import customNav from '@/utils/nav/customNav.js'
 export default {
+  mixins: [customNav],
   data () {
     return {
-
       list: [], //今天待办的任务
       expiredList: [], //当前用户的已完成或者过期的任务
       laterList: [], //后续待办的任务
@@ -216,12 +221,11 @@ export default {
           },
         },
       ],
-
       showTask: false,
       showCalendar: false,
       calendarMode: 'date',
       loading: true,
-      selectTag: 'today',
+      selectTag: 'today',//任务弹窗的默认日期
       deleteShow: false,
       disabled: false,
       btnWidth: 180,
@@ -244,24 +248,13 @@ export default {
         height: '5vh',
         borderBottom: '1px solid #ffc90e',
       },
-      navBarHeight: 0,//导航栏高度
-      navTop: 0,//胶囊距上边界距离
-      navPaddingBottom: 0,
-      openlist: []
+
+      openlist: [],
+      pageCalendar: false
     }
   },
   onLoad () {
-    //导航栏高度 = 状态栏到胶囊的间距（胶囊距上边界距离-状态栏高度） * 2 + 胶囊高度 + 状态栏高度。
-    const statusBarHeight = uni.getSystemInfoSync().statusBarHeight;//状态栏高度。
-    //console.log('statusBarHeight' + statusBarHeight)
-    const menuButtonInfo = uni.getMenuButtonBoundingClientRect();//胶囊相关信息
-    const menuButtonHeight = menuButtonInfo.height //胶囊高度
-    const menuButtonTop = menuButtonInfo.top//胶囊距上边界距离
-    // console.log('menuButtonHeight' + menuButtonHeight)
-    // console.log('menuButtonTop' + menuButtonTop)
-    this.navBarHeight = (menuButtonTop - statusBarHeight) * 2 + menuButtonHeight + statusBarHeight
-    this.navTop = menuButtonTop;
-    this.navPaddingBottom = menuButtonTop - statusBarHeight
+
     // 通过延时模拟向后端请求数据，调隐藏骨架屏
     setTimeout(() => {
       this.loading = false
@@ -286,6 +279,21 @@ export default {
     },
   },
   methods: {
+    toCalendarPage (e) {
+      uni.navigateTo({
+        url: 'dayList?day=' + e.result,
+        success: res => {
+          console.log(res)
+        },
+        fail: err => {
+          console.log(err)
+        }
+      });
+      console.log(e)
+    },
+    toDayPage () {
+      this.pageCalendar = true
+    },
     async getTask () {
       //获取所有task
       const res = await request('task', 'getTask', {
@@ -301,7 +309,7 @@ export default {
           this.expiredList.push(item)
         }
       })
-      console.log(this.expiredList)
+
       //今天待办的任务
       res.data.map((item) => {
         if (item.time === this.today) {
@@ -419,12 +427,7 @@ export default {
         if (index != idx) this.openlist[idx].showSwipe = false
       })
     },
-    openLater (index) {
-      this.laterList[index].showSwipe = true
-      this.laterList.map((val, idx) => {
-        if (index != idx) this.laterList[idx].showSwipe = false
-      })
-    },
+
     async taskEdit () {
       if (this.taskOperation == 'add') {
         //添加完成

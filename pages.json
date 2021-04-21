@@ -4,6 +4,13 @@
   },
   "pages": [
     {
+      "path": "pages/todoList/dayList",
+      "style": {
+        "navigationBarTitleText": "日期",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/todoList/todolist",
       "style": {
         "navigationBarTitleText": "待办",
