@@ -397,6 +397,7 @@ export default {
             duration: '2300',
           })
         }
+
       } else {
         //编辑
         this.openlist[index].show = false
@@ -520,13 +521,14 @@ export default {
     font-weight: bold;
     font-size: 4vw;
   }
+  .titleBox {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
-.titleBox {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-}
+
 .date-tag-now {
   border-radius: 5vw;
   font-size: 3vw;
