@@ -1,88 +1,140 @@
 <template>
-  <view class="">
+  <view>
+    <u-popup v-model="createShow"
+             border-radius="20"
+             mode="center">
+      <view class="popView">
 
-    <u-swipe-action :show="item.show"
-                    :index="index"
-                    v-for="(item, index) in list"
-                    :key="index"
-                    @click="click"
-                    @open="open"
-                    :options="options">
-
-      <view class="item u-border-bottom">
-        <u-checkbox @change="checkboxChange"
-                    v-model="item.checked"
-                    :name="item.name">
-
-        </u-checkbox>
-        <!-- 此层wrap在此为必写的，否则可能会出现标题定位错误 -->
-        <view class="title-wrap">
-          <text class="title u-line-2">{{ item.name }}</text>
-        </view>
+        <u-input v-model="createName"
+                 placeholder="输入自习室名字" />
+        <view class="actionBtn"
+              @click="createRoom">创建</view>
       </view>
-    </u-swipe-action>
+    </u-popup>
+    <u-popup v-model="joinShow"
+             border-radius="20"
+             mode="center">
+      <view class="popView">
+        <u-input v-model="joinName"
+                 placeholder="输入自习室名字" />
+        <view class="actionBtn"
+              @click="joinRoom">加入</view>
+      </view>
+    </u-popup>
+    <view class="btn">
+      <u-button type="primary"
+                @click="createBtn">创建自习室</u-button>
+      <u-button type="warning"
+                @click="joinBtn">加入自习室</u-button>
+    </view>
 
   </view>
 </template>
 
 <script>
+import { request } from '@/utils/request/request.js'
 export default {
   data () {
     return {
-      list: [
-        {
-          name: 'apple',
-          checked: false,
-          disabled: false,
-          show: false
-        },
-        {
-          name: 'banner',
-          checked: false,
-          disabled: false,
-          show: false
-        },
-        {
-          name: 'orange',
-          checked: false,
-          disabled: false,
-          show: false
-        }
-      ],
-      disabled: false,
-      btnWidth: 180,
-      show: false,
-      options: [
-        {
-          text: '收藏',
-          style: {
-            backgroundColor: '#007aff'
-          }
-        },
-        {
-          text: '删除',
-          style: {
-            backgroundColor: '#dd524d'
-          }
-        }
-      ]
-    };
+      createShow: false,
+      joinShow: false,
+      createName: '',
+      joinName: ''
+    }
+  },
+  onBackPress (options) {
+    console.log('from:' + options.from)
   },
   methods: {
-    // 选中某个复选框时，由checkbox时触发
-    checkboxChange (e) {
-      console.log(e);
+    createBtn () {
+      this.createName = ''
+      this.createShow = true;
     },
-    // 选中任一checkbox时，由checkbox-group触发
-    checkboxGroupChange (e) {
-      console.log(e);
+    joinBtn () {
+      this.joinName = ''
+      this.joinShow = true;
     },
-    // 全选
-    checkedAll () {
-      this.list.map(val => {
-        val.checked = true;
+    async createRoom () {
+      this.createShow = true
+      const res = await request('studyRoom', 'addRoom', {
+        name: this.createName
       })
+      console.log(res)
+      if (res.status == 1) {
+        uni.navigateTo({
+          url: 'room?name=' + this.createName,
+          success: res => {
+            console.log(res);
+            this.createName = ''
+            this.createShow = false;
+          },
+          fail: err => {
+            console.log(err)
+          }
+        });
+      } else if (res.status == 2) {
+        uni.showToast({
+          title: '房间名字已存在',
+          duration: 2000,
+          icon: 'none'
+        });
+      }
+
+    },
+    async joinRoom () {
+      this.joinShow = true
+      const res = await request('studyRoom', 'checkName', {
+        name: this.joinName
+      })
+      if (res.status == 2) {
+        //没有房间
+        uni.showToast({
+          title: '没有该自习室 请重新输入名字',
+          duration: 2000,
+          icon: 'none'
+        });
+      } else {
+        uni.navigateTo({
+          url: 'room?name=' + this.joinName,
+          success: () => {
+
+            this.joinName = ''
+            this.joinShow = false;
+          },
+          fail: err => {
+            console.log(err)
+          }
+        });
+      }
+
     }
   }
-};
+}
 </script>
+
+<style lang="scss" scoped>
+.btn {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 50vw;
+  margin: 0 auto;
+}
+.popView {
+  display: flex;
+  flex-direction: column;
+  padding: 2vw;
+  .actionBtn {
+    height: 5vh;
+    width: 30vw;
+    color: white;
+    background-color: $main-color-yellow;
+    text-align: center;
+    line-height: 5vh;
+    margin: 0 auto;
+    border-radius: 10%;
+    margin-top: 2vh;
+  }
+}
+</style>

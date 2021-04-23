@@ -4,6 +4,18 @@
   },
   "pages": [
     {
+      "path": "pages/studyRoom/studyroom",
+      "style": {
+        "navigationBarTitleText": "自习室"
+      }
+    },
+    {
+      "path": "pages/studyRoom/room",
+      "style": {
+        "navigationBarTitleText": "自习室"
+      }
+    },
+    {
       "path": "pages/todoList/todolist",
       "style": {
         "navigationBarTitleText": "待办",
@@ -17,12 +29,6 @@
       }
     },
 
-    {
-      "path": "pages/studyRoom/studyroom",
-      "style": {
-        "navigationBarTitleText": "自习室"
-      }
-    },
     {
       "path": "pages/mine/mine",
       "style": {

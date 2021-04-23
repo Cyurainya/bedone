@@ -203,8 +203,8 @@ export default {
 <style scoped lang="scss">
 .bottle {
   margin: 20vh auto;
-  width: 150px;
-  height: 225px;
+  width: 150px; //50vw
+  height: 225px; //75vh
   border-radius: 0 0 20px 20px;
   border: 3px solid black;
   border-top: none;
@@ -268,10 +268,13 @@ export default {
   padding: 2vw;
 }
 .setTime {
-  padding: 2vw;
-  border-radius: 10%;
-  color: #8a8a8a;
-  background-color: #e6e6e6;
+  padding: 1vw;
+  border-radius: 20%;
+  color: #ffc90e;
+  background-color: white;
+  font-size: 10px;
+  border: 1px solid #ffc90e;
+  font-weight: normal;
 }
 .timeBox {
   position: absolute;
