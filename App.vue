@@ -1,5 +1,12 @@
 <script>
+import GoEasy from 'goeasy';
 export default {
+  globalData: {
+    goEasy: GoEasy.getInstance({
+      host: 'hangzhou.goeasy.io',
+      appkey: 'BC-6ee4e308a51c4908b77b9d2af9134bbe',
+    })
+  },
   onLaunch: function () {
     console.log('App Launch')
     this.initLogin()
@@ -11,7 +18,7 @@ export default {
     console.log('App Hide')
   },
   methods: {
-    async initLogin() {
+    async initLogin () {
       const userInfo = uni.getStorageSync('userInfo')
       if (userInfo) {
         this.$store.dispatch('setUserData', userInfo)
@@ -20,10 +27,10 @@ export default {
         setTimeout(() => {
           uni.switchTab({
             url: '/pages/mine/mine',
-            success(res) {
+            success (res) {
               console.log(res)
             },
-            fail(err) {
+            fail (err) {
               console.log(err)
             },
           })

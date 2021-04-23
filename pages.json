@@ -10,10 +10,7 @@
       }
     },
     {
-      "path": "pages/studyRoom/room",
-      "style": {
-        "navigationBarTitleText": "自习室"
-      }
+      "path": "pages/studyRoom/room"
     },
     {
       "path": "pages/todoList/todolist",

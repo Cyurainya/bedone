@@ -4,6 +4,7 @@ import store from './store'
 import * as util from './utils/utils'
 import uView from 'uview-ui'
 
+
 Vue.prototype.$util = util
 Vue.prototype.$store = store
 Vue.config.productionTip = false

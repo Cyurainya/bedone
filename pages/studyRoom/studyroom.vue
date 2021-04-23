@@ -39,11 +39,11 @@ export default {
       createShow: false,
       joinShow: false,
       createName: '',
-      joinName: ''
+      joinName: '',
     }
   },
-  onBackPress (options) {
-    console.log('from:' + options.from)
+  onShow () {
+    Object.assign(this.$data, this.$options.data());
   },
   methods: {
     createBtn () {
@@ -59,12 +59,20 @@ export default {
       const res = await request('studyRoom', 'addRoom', {
         name: this.createName
       })
-      console.log(res)
+
       if (res.status == 1) {
+        //res.data.id是id 就只有id
+        let roomToken = {
+          roomId: res.data.id,
+          roomName: this.createName,
+          userId: this.$store.getters.userId,
+          nickname: this.$store.getters.userName,
+          avatar: this.$store.getters.userAvatar
+        }
+        let roomTokenAsJsonString = JSON.stringify(roomToken)
         uni.navigateTo({
-          url: 'room?name=' + this.createName,
-          success: res => {
-            console.log(res);
+          url: "room?roomToken=" + roomTokenAsJsonString,
+          success: () => {
             this.createName = ''
             this.createShow = false;
           },
@@ -94,10 +102,19 @@ export default {
           icon: 'none'
         });
       } else {
+        //res.data.data[0]._id是id   
+        //res.data.data[0].name是名字
+        let roomToken = {
+          roomId: res.data.data[0]._id,
+          roomName: this.joinName,
+          userId: this.$store.getters.userId,
+          nickname: this.$store.getters.userName,
+          avatar: this.$store.getters.userAvatar
+        }
+        let roomTokenAsJsonString = JSON.stringify(roomToken)
         uni.navigateTo({
-          url: 'room?name=' + this.joinName,
+          url: "room?roomToken=" + roomTokenAsJsonString,
           success: () => {
-
             this.joinName = ''
             this.joinShow = false;
           },
