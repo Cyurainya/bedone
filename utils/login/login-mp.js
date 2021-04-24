@@ -53,6 +53,7 @@ export default {
             this.$util.msg(res.msg)
             reject(new Error(res.msg))
           } else {
+            console.log(res.userInfo)
             resolve(res.userInfo)
           }
         })

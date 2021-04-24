@@ -16,7 +16,8 @@
       "path": "pages/todoList/todolist",
       "style": {
         "navigationBarTitleText": "待办",
-        "navigationStyle": "custom"
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
       }
     },
     {
@@ -36,7 +37,8 @@
       "path": "pages/todoList/dayList",
       "style": {
         "navigationBarTitleText": "日期",
-        "navigationStyle": "custom"
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
       }
     }
   ],

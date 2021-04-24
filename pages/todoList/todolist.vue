@@ -107,7 +107,7 @@
               {{item.title}}
             </view>
             <view class="detail">{{item.detail}}
-              <text style="color:red;padding:0 3vw">{{item.time}}</text>
+              <text>{{item.time}}</text>
 
             </view>
           </view>
@@ -143,7 +143,8 @@
             <view class="title">
               {{item.title}}
             </view>
-            <view class="detail">{{item.detail}}</view>
+            <view class="detail"
+                  v-show="item.detail !== undefined">{{item.detail}}</view>
           </view>
         </view>
 
@@ -173,7 +174,8 @@
                 <view class="title">
                   {{item.title}}
                 </view>
-                <view class="detail">{{item.detail}}
+                <view class="detail"
+                      v-show="item.detail !== undefined">{{item.detail}}
                   <text style="color:red;padding:0 3vw">{{item.time}}</text>
 
                 </view>
@@ -362,6 +364,7 @@ export default {
     addTask (taskOpera) {
       this.taskOperation = taskOpera
       this.selectTask = {}
+      this.selectTask.time = this.today
       this.showTask = true
     },
     tagClick (opera) {
@@ -443,6 +446,8 @@ export default {
             title: '添加成功',
             type: 'success',
           })
+
+          console.log(this.selectTask.time)
           //如果是后续事件的话需要改界面
           this.getTask()
         } else if (res.status == 0) {
@@ -508,6 +513,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  width: 100%;
 }
 
 .popView {
@@ -567,11 +573,20 @@ export default {
   }
   .detail {
     color: grey;
+    display: -webkit-box;
+    display: -webkit-flex;
     display: flex;
     font-size: 3vw;
     line-height: normal;
-    view {
-      padding-right: 3vw;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text {
+      color: red;
+      padding: 0 3vw;
+      width: 26vw;
+      text-align: center;
     }
   }
 }

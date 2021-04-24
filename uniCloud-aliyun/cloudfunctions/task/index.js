@@ -78,8 +78,9 @@ exports.main = async (event, context) => {
      }
 
   }else if(operation == 'addTask'){
+
     //添加某个task
-    await collection.add({
+    const res = await collection.add({
       title:data.title,
       detail:data.detail,
       userId:data.userId,
@@ -87,6 +88,7 @@ exports.main = async (event, context) => {
       checkBox:false,
       showSwipe:false
     })
+    console.log(res)
     return {
       data:{
         status:1,

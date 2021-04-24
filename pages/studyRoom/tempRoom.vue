@@ -1,77 +1,42 @@
 <template>
-  <view class="container">
-    <view class="room-content">
-      <view class="music">
-        <image src="./../../static/music-off.png"
-               mode="" />
-        <view>点击播放</view>
+  <view class="chat-room">
+    <!-- 用户列表 -->
+    <view class="online-avatar-container">
+      <view class="online-avatar-item"
+            v-for="(user, key) in currentRoom.onlineUsers.users"
+            :key="key"
+            :style="(currentRoom.onlineUsers.users.length-1)===key?'':'transform:translateX('+((currentRoom.onlineUsers.users.length-1-key)*20+20)+'rpx)'">
+        <image :src="user.avatar"></image>
       </view>
-      <view class="time-content">
-        <view class="room-time">你已经学习了
-          <text> 40:00</text>
-
-          分钟
-        </view>
-      </view>
-      <button open-type="share">
-        <view class="invite-box"
-              @click="inviteFri">
-          <image src="./../../static/invite.png"
-                 mode="" />
-          <view>邀请好友</view>
-        </view>
-      </button>
-
+      <view class="online-count">{{currentRoom.onlineUsers.count}}</view>
     </view>
-    <view class="users-container">
-      <view class="count-box">共有
-        <text class="counter">{{currentRoom.onlineUsers.count - 1}}</text>
-        人陪你学习
-      </view>
-      <view class="user-box">
-        <view class="user-item"
-              v-for="(user, key) in currentRoom.onlineUsers.users"
-              :key="key">
-          <image :class="userId == currentRoom.currentUser.id ? 'avatar self-avatar' : 'avatar' "
-                 :src="user.avatar"></image>
-          <view class="user-name">{{user.nickname}}</view>
-        </view>
-
-      </view>
-    </view>
-    <view class="message-box">
-      <view class="new-mes-box"
-            v-show="newMessage">
-        <view class="message-item">
-          <text :class="newMessage.senderUserId == currentRoom.currentUser.id ? 'self' : '' ">{{newMessage && newMessage.senderNickname}}:</text>
-          <text>
-            {{newMessage && newMessage.content}}
-          </text>
-        </view>
-      </view>
-      <view class="message-container"
-            v-show="messageShow">
-        <view class="message-list"
+    <!-- 消息显示 -->
+    <view class="chat-room-container">
+      <view class="scroll-view">
+        <view class="message-box"
               v-for="(message, key) in currentRoom.messages"
               :key="key"
-              :id="'message-list'+ key">
+              :id="'message-box'+ key">
           <view class="message-item">
-            <text :class="message.senderUserId == currentRoom.currentUser.id ? 'self' : '' ">{{message && message.senderNickname}}:</text>
-            <text>
+            <text class="user-name">{{message && message.senderNickname}}:</text>
+            <text :class="message.senderUserId == currentRoom.currentUser.id ? 'user-message self' : 'user-message' ">
               {{message && message.content}}
             </text>
           </view>
         </view>
       </view>
-      <view class="message-action">
-        <view class="history-btn"
-              @click="historyShow">历史消息▲</view>
-        <view><input class="send-input"
+      <!-- 消息输入 -->
+      <view class="chat-room-input">
+
+        <view style="position: relative;">
+          <input class="uni-input"
                  :value="newMessageContent"
                  placeholder="说点什么..."
-                 @input="onInputMessage" /></view>
-        <view class="send-btn"
-              @click="sendMessage(newMessageContent)">send</view>
+                 @input="onInputMessage" />
+          <view class="uni-btn"
+                @click="sendMessage(newMessageContent)">↑</view>
+        </view>
+
       </view>
     </view>
 
@@ -85,68 +50,39 @@ export default {
     return {
       currentRoom: null,
       newMessageContent: "",
-      messageShow: false,
-      newMessage: '',
-      timer: null,
-      testUser: {
-        nickname: '斯蝈',
-        avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/1G2rlRgNalX9BfGOmlomPicMb0XRuB19We8PsvRE33SsOCsv42SORgjr15ebySTKwticvzKS9oPL2dQ51Aa8OMZg/132'
-      }
-    }
-  },
-  computed: {
-    userId () {
-      return this.$store.getters.userId
-    },
-  },
-  //分享按钮
-  onShareAppMessage (res) {
-    if (res.from === 'button') {// 来自页面内分享按钮
-      console.log(res.target)
-    }
-    return {
-      title: '一起加入自习室吧!',
-      path: '/pages/studyRoom/room?roomid=' + this.currentRoom.roomId + '&roomName' + this.currentRoom.roomName
     }
   },
   onLoad (options) {
-    console.log(options)
-    if (options.roomToken) {
-      //获取数据
-      let roomToken = JSON.parse(options.roomToken);
-      // 初始化room
-      this.currentRoom = {
-        roomId: roomToken.roomId,
-        roomName: roomToken.roomName,
-        onlineUsers: {
-          count: 0,
-          users: []
-        },
-        messages: [],
-        currentUser: {
-          id: roomToken.userId,
-          nickname: roomToken.nickname,
-          avatar: roomToken.avatar
-        }
-      };
+    //获取数据
+    let roomToken = JSON.parse(options.roomToken);
+    // 初始化room
+    this.currentRoom = {
+      roomId: roomToken.roomId,
+      roomName: roomToken.roomName,
+      onlineUsers: {
+        count: 0,
+        users: []
+      },
+      messages: [],
+      currentUser: {
+        id: roomToken.userId,
+        nickname: roomToken.nickname,
+        avatar: roomToken.avatar
+      }
+    };
+    // 设置导航标题
+    uni.setNavigationBarTitle({
+      title: roomToken.roomName
+    });
 
-      // 设置导航标题
-      uni.setNavigationBarTitle({
-        title: roomToken.roomName
-      });
+    // 连接goEasy
+    this.connectGoEasy();
 
-      // 连接goEasy
-      this.connectGoEasy();
+    // 监听用户上下线
+    this.listenUsersOnlineOffline();
 
-      // 监听用户上下线
-      this.listenUsersOnlineOffline();
-
-      // 监听新消息
-      this.listenNewMessage();
-    } else if (options.roomid) {
-      //通过分享打开的 需要获取用户信息
-    }
-
+    // 监听新消息
+    this.listenNewMessage();
   },
   onUnload () {
     // 断开连接
@@ -167,7 +103,6 @@ export default {
         userId: this.currentRoom.currentUser.id,
         userData: '{"nickname":"' + this.currentRoom.currentUser.nickname + '","avatar":"' + this.currentRoom.currentUser.avatar + '"}',
         onSuccess: function () {
-
           console.log("GoEasy connect successfully.")
           // 加载在线用户列表
           self.loadOnlineUsers();
@@ -204,12 +139,11 @@ export default {
               self.currentRoom.onlineUsers.users.push(user);
               //添加进入房间的消息
               let message = {
-                content: " 进入自习室",
+                content: " 进入房间",
                 senderUserId: event.userId,
                 senderNickname: userData.nickname,
               };
               self.currentRoom.messages.push(message);
-              self.newMessageShow(message)
             } else {
               //退出房间
               self.currentRoom.onlineUsers.users.forEach((user, index) => {
@@ -222,7 +156,6 @@ export default {
                     senderNickname: offlineUser[0].nickname,
                   };
                   self.currentRoom.messages.push(message);
-                  self.newMessageShow(message)
                 }
               });
             }
@@ -259,7 +192,6 @@ export default {
             senderNickname: content.senderNickname,
           };
           self.currentRoom.messages.push(newMessage);
-          self.newMessageShow(newMessage)
         },
         onSuccess: function () {
           console.log("监听新消息成功")
@@ -350,183 +282,133 @@ export default {
         }
       });
     },
-    //显示历史信息
-    historyShow () {
-      this.messageShow = !this.messageShow
-    },
-    //新消息定时显示一条
-    newMessageShow (message) {
-      clearTimeout(this.timer)
-      this.newMessage = message;
-      setTimeout(() => {
-        this.newMessage = ''
-      }, 5000)
-    },
-
   }
 }
 </script>
 
 <style scope lang="scss">
-.container {
-  min-height: 100vh;
-  padding-top: 3vh;
-}
-.room-content {
-  width: 90vw;
-  height: 15vh;
-  background: white;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  margin: 0 auto;
-  border-radius: 10px;
-  align-items: center;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  button {
-    height: 11vh;
-    width: 19vw;
-    margin: 0;
-    padding: 0;
-    line-height: normal;
-    background-color: white;
-    border: 0px solid white;
-    border-radius: 0px;
-    font-size: smaller;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  button::after {
-    border: none;
-  }
-  .music {
-    text-align: center;
-    font-size: smaller;
-    image {
-      width: 10vw;
-      height: 10vw;
-    }
-  }
-  .time-content {
-    display: flex;
-    height: inherit;
-    justify-content: space-around;
-    flex-direction: column;
-    text {
-      font-weight: bold;
-      font-size: initial;
-      padding: 1vw;
-    }
-  }
-  .invite-box {
-    text-align: center;
-    font-size: smaller;
-    image {
-      width: 10vw;
-      height: 10vw;
-    }
-  }
-}
-.message-box {
-  position: absolute;
-  width: 100vw;
-  bottom: 0;
-  .message-container {
-    padding: 2vw;
-    width: 100vw;
-    max-height: 30vh;
-    overflow: scroll;
-    background: rgba(250, 234, 214, 0.2);
-  }
-  .message-item {
-    background-color: rgba(138, 138, 138, 0.2);
-    border-radius: 10px;
-    width: fit-content;
-    margin: 2px 0;
-    padding: 5px;
-    .self {
-      color: green;
-    }
-  }
-  .message-action {
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    padding: 1vw;
-    justify-content: space-between;
-    .history-btn {
-      height: 5vh;
-      line-height: 5vh;
-      text-align: center;
-      /* background-color: rgba(138, 138, 138, 0.2); */
-      color: black;
-      border-radius: 8px;
-      border: 1px solid black;
-      padding: 0 2vw;
-    }
-  }
-  .send-input {
-    width: 65vw;
-  }
-  .send-btn {
-    width: 10vw;
-    height: 5vh;
-    line-height: 5vh;
-    text-align: center;
-    /* background-color: rgb(255 ,255 ,255 , 20%); */
-    color: black;
-    border-radius: 7px;
-    /* background-color: white; */
-    border: 1px solid black;
-  }
+uni-page-body {
+  height: 100%;
 }
 
-.users-container {
-  width: 100vw;
-  .count-box {
-    color: black;
-    width: 100vw;
-    padding: 2vw;
-    text-align: center;
-    padding-bottom: 0;
-    .counter {
-      font-size: 7vw;
-      padding: 0 2vw;
-    }
-  }
-  .user-box {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: center;
-    .user-item {
-      width: 21vw;
-      //height: 20vw;
-      margin: 2vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      .user-name {
-        text-align: center;
-      }
-      .self-avatar {
-        border: 2px solid yellow;
-      }
-      .avatar {
-        width: 15vw;
-        height: 15vw;
-        border-radius: 100%;
-      }
-    }
-  }
+.chat-room {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.online-avatar-container {
+  position: fixed;
+  right: 0;
+  width: 100%;
+  height: 80rpx;
+  display: flex;
+  justify-content: flex-end;
+  padding: 28rpx;
+  box-shadow: 10rpx 30rpx 50rpx #fff;
+  z-index: 40;
+  background: #ffffff;
+}
+
+.online-avatar-item {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  text-align: center;
+  line-height: 80rpx;
+  background: rgba(51, 51, 51, 0.3);
+  color: #fff;
+  font-size: 18rpx 28rpx;
+}
+
+.online-count {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  text-align: center;
+  line-height: 80rpx;
+  background: rgba(51, 51, 51, 0.3);
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.online-avatar-item image {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.chat-room-container {
+  padding-top: 100rpx;
+}
+
+.scroll-view {
+  overflow-y: auto;
+  padding: 20rpx 38rpx 130rpx 38rpx;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.message-box {
+  margin-top: 16rpx;
+}
+
+.message-item {
+  box-sizing: border-box;
+  height: 72rpx;
+  background-color: rgba(196, 196, 196, 0.2);
+  display: inline-block;
+  font-size: 28rpx;
+  border-radius: 100rpx;
+  padding: 18rpx 30rpx;
+  font-family: Microsoft YaHei UI;
+}
+
+.user-name {
+  color: #d02129;
+  font-family: Microsoft YaHei UI;
+}
+
+.user-message {
+  color: #333;
+  font-family: Microsoft YaHei UI;
+}
+
+.chat-room-input {
+  position: fixed;
+  bottom: 0;
+  height: 92rpx;
+  line-height: 92rpx;
+  padding: 10rpx 28rpx 20rpx 28rpx;
+  display: flex;
+  background: #ffffff;
+}
+
+.uni-input {
+  width: 528rpx;
+  background-color: rgba(51, 51, 51, 0.1);
+  height: 92rpx;
+  border-radius: 100rpx;
+  box-sizing: border-box;
+  padding: 26rpx 40rpx;
+  font-size: 28rpx;
+}
+
+.uni-btn {
+  position: absolute;
+  z-index: 1000;
+  width: 72rpx;
+  height: 72rpx;
+  background: #d02129;
+  right: 10rpx;
+  top: 10rpx;
+  border-radius: 72rpx;
+  text-align: center;
+  line-height: 72rpx;
+  color: #fff;
+  font-weight: bold;
+  font-size: 32rpx;
+}
+.self {
+  color: #d02129;
 }
 </style>
