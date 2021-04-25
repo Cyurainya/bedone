@@ -8,12 +8,11 @@
               @getuserinfo="mpWxLogin">
         授权登录
       </button>
-     
+
       <u-avatar v-show="userId"
                 :src="userInfo.avatar"
-                size="large" />	  
-       
-       
+                size="large" />
+
       <text v-show="userId"
             class="username">
         {{ userInfo.nickname }}
@@ -31,7 +30,7 @@ export default {
 
 <style scoped lang="scss">
 .me-cell {
-//   border-bottom: 1px solid $main-color-grey;
+  //   border-bottom: 1px solid $main-color-grey;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,12 +41,15 @@ export default {
   color: white;
   background-color: #43cf7c;
   text-align: center;
-  -webkit-border-radius: 5px;
   border-radius: 5px;
   margin: 3vw 0;
-  font-size: 30rpx;
+  font-size: 33rpx;
+  width: 80vw;
 }
-.username{
-	font-weight: bold;
+.login-button ::after {
+  border: none;
+}
+.username {
+  font-weight: bold;
 }
 </style>

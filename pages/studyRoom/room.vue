@@ -1,14 +1,18 @@
 <template>
   <view class="container">
     <view class="room-content">
-      <view class="music">
-        <image src="./../../static/music-off.png"
+      <view class="music"
+            @click="playMusic">
+        <image :class="play?'play-music':''"
+               :src="!play ? './../../static/music-off.png':'./../../static/music-on.png'"
                mode="" />
-        <view>点击播放</view>
+        <view>
+          {{!play ? '播放音乐':'暂停音乐'}}
+        </view>
       </view>
       <view class="time-content">
         <view class="room-time">你已经学习了
-          <text> 40:00</text>
+          <text> {{minute}}:{{second}}</text>
 
           分钟
         </view>
@@ -25,8 +29,8 @@
     </view>
     <view class="users-container">
       <view class="count-box">共有
-        <text class="counter">{{currentRoom.onlineUsers.count - 1}}</text>
-        人陪你学习
+        <text class="counter">{{currentRoom.onlineUsers.count}}</text>
+        人和你一起学习
       </view>
       <view class="user-box">
         <view class="user-item"
@@ -87,11 +91,15 @@ export default {
       newMessageContent: "",
       messageShow: false,
       newMessage: '',
-      timer: null,
-      testUser: {
-        nickname: '斯蝈',
-        avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/1G2rlRgNalX9BfGOmlomPicMb0XRuB19We8PsvRE33SsOCsv42SORgjr15ebySTKwticvzKS9oPL2dQ51Aa8OMZg/132'
-      }
+      messageTimer: null,
+      loginPop: false,
+      room: null,
+      roomTimer: null,
+      roomTime: 0,
+      minute: '00',
+      second: '00',
+      play: false,
+      bgAudioMannager: null
     }
   },
   computed: {
@@ -106,12 +114,12 @@ export default {
     }
     return {
       title: '一起加入自习室吧!',
-      path: '/pages/studyRoom/room?roomid=' + this.currentRoom.roomId + '&roomName' + this.currentRoom.roomName
+      path: '/pages/studyRoom/room?roomId=' + this.currentRoom.roomId + '&roomName' + this.currentRoom.roomName
     }
   },
   onLoad (options) {
-    console.log(options)
     if (options.roomToken) {
+      //主动打开小程序
       //获取数据
       let roomToken = JSON.parse(options.roomToken);
       // 初始化room
@@ -129,7 +137,7 @@ export default {
           avatar: roomToken.avatar
         }
       };
-
+      console.log(roomToken)
       // 设置导航标题
       uni.setNavigationBarTitle({
         title: roomToken.roomName
@@ -143,12 +151,68 @@ export default {
 
       // 监听新消息
       this.listenNewMessage();
-    } else if (options.roomid) {
+    } else if (options.roomId) {
+      console.log('转发打开')
+      console.log(options)
+      console.log('userId:', this.userId)
       //通过分享打开的 需要获取用户信息
+
+      if (this.$store.getters.userId) {
+        console.log('有user')
+        //有userID 只需要获取用户信息就可以了
+        uni.showLoading({
+          title: '加载中'
+        });
+        this.currentRoom = {
+          roomId: options.roomId,
+          roomName: options.roomName,
+          onlineUsers: {
+            count: 0,
+            users: []
+          },
+          messages: [],
+          currentUser: {
+            id: this.$store.getters.userId,
+            nickname: this.$store.getters.userName,
+            avatar: this.$store.getters.userAvatar
+          }
+        };
+        // 设置导航标题
+        uni.setNavigationBarTitle({
+          title: options.roomName
+        });
+
+        // 连接goEasy
+        this.connectGoEasy();
+
+        // 监听用户上下线
+        this.listenUsersOnlineOffline();
+
+        // 监听新消息
+        this.listenNewMessage();
+        uni.hideLoading();
+      }
+
     }
+    this.roomTimer = setInterval(() => {
+      this.roomTime++;
+
+      //开始计时
+      this.minute =
+        Math.floor(this.roomTime / 60).toString().length == 2
+          ? Math.floor(this.roomTime / 60)
+          : '0' + Math.floor(this.roomTime / 60)
+      this.second =
+        Math.floor(this.roomTime % 60).toString().length == 2
+          ? Math.floor(this.roomTime % 60)
+          : '0' + Math.floor(this.roomTime % 60)
+
+    }, 1000)
+
 
   },
   onUnload () {
+    clearTimeout(this.roomTimer)
     // 断开连接
     goEasy.disconnect({
       onSuccess () {
@@ -162,6 +226,7 @@ export default {
   methods: {
     // 连接goEasy
     connectGoEasy () {
+
       let self = this;
       goEasy.connect({
         userId: this.currentRoom.currentUser.id,
@@ -356,13 +421,28 @@ export default {
     },
     //新消息定时显示一条
     newMessageShow (message) {
-      clearTimeout(this.timer)
+      clearTimeout(this.messageTimer)
       this.newMessage = message;
-      setTimeout(() => {
+      this.messageTimer = setTimeout(() => {
+        //五秒后清除
         this.newMessage = ''
       }, 5000)
     },
+    //播放音乐
+    playMusic () {
+      this.play = !this.play
+      if (this.play) {
+        this.bgAudioMannager = uni.getBackgroundAudioManager();
+        this.bgAudioMannager.title = 'Cry for the Moon';
+        this.bgAudioMannager.singer = '出羽良彰 (でわ よしあき)';
+        this.bgAudioMannager.coverImgUrl = 'https://i.ytimg.com/vi/QsdDNZUktHA/sddefault.jpg';
+        this.bgAudioMannager.src = 'https://mp32.9ku.com/upload/128/2017/11/16/872337.mp3';
 
+      } else {
+        this.bgAudioMannager.stop()
+      }
+
+    }
   }
 }
 </script>
@@ -414,6 +494,17 @@ export default {
     image {
       width: 10vw;
       height: 10vw;
+    }
+    .play-music {
+      animation: rotate 3s linear 0s infinite;
+    }
+  }
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
     }
   }
   .time-content {

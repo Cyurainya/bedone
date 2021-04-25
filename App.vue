@@ -9,6 +9,7 @@ export default {
   },
   onLaunch: function () {
     console.log('App Launch')
+
     this.initLogin()
   },
   onShow: function () {

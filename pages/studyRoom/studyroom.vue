@@ -150,7 +150,7 @@ export default {
     text-align: center;
     line-height: 5vh;
     margin: 0 auto;
-    border-radius: 10%;
+    // border-radius: 10%;
     margin-top: 2vh;
   }
 }
