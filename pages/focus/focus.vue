@@ -269,7 +269,7 @@ export default {
 }
 .setTime {
   padding: 1vw;
-  border-radius: 20%;
+  border-radius: 0%;
   color: #ffc90e;
   background-color: white;
   font-size: 10px;

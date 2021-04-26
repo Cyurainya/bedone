@@ -18,13 +18,35 @@
         {{ userInfo.nickname }}
       </text>
     </view>
+    <view class="data-cell"
+          @click="dataPage">
+      <view class="cell-title">
+        <image src="./../../static/data.png"
+               mode="" />
+        数据统计
+      </view>
+      <view>＞</view>
+    </view>
   </view>
 </template>
 
 <script scoped>
 import loginMpWx from '@/utils/login/login-mp.js'
 export default {
-  mixins: [loginMpWx]
+  mixins: [loginMpWx],
+  methods: {
+    dataPage () {
+      uni.navigateTo({
+        url: "dataPage",
+        success: (res) => {
+          console.log(res)
+        },
+        fail: err => {
+          console.log(err)
+        }
+      });
+    }
+  }
 }
 </script>
 
@@ -51,5 +73,22 @@ export default {
 }
 .username {
   font-weight: bold;
+}
+.data-cell {
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2vw;
+  border-top: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+  .cell-title {
+    display: flex;
+    align-items: center;
+    image {
+      width: 8vw;
+      height: 8vw;
+    }
+  }
 }
 </style>
