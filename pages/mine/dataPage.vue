@@ -55,7 +55,7 @@
                 </view>
                 <view class="box-cell">
                   <view class="box-title">事件完成度</view>
-                  <view></view>
+
                   <view class="charts-box">
                     <qiun-data-charts type="pie"
                                       :chartData="lastTickData"
@@ -83,10 +83,89 @@
 
           </swiper-item>
           <swiper-item>
-            <view class="swiper-item">B</view>
+            <scroll-view scroll-y
+                         style="height: 100%;width: 100%;">
+              <view class="swiper-item">
+                <view class="box-wrap">
+                  <view class="num-box"
+                        style="background-color: lightseagreen;">
+                    <view class="name-amount">事件总工作量</view>
+                    <view>
+                      <text class="number">3</text>
+                      <text>件</text>
+                    </view>
+                  </view>
+                  <view class="num-box"
+                        style="background-color: cornflowerblue;">
+                    <view class="name-amount">专注时长</view>
+                    <view>
+                      <text class="number">30</text>
+                      <text>min</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="box-cell">
+                  <view class="box-title">事件完成度</view>
+
+                  <view class="charts-box">
+                    <view class="charts-box">
+                      <qiun-data-charts type="column"
+                                        :chartData="weekTickData"
+                                        background="none"
+                                        :animation="false" />
+                    </view>
+                  </view>
+                </view>
+                <view class="box-cell">
+                  <view class="box-title">事件完成度</view>
+
+                  <view class="charts-box">
+                    <view class="charts-box">
+                      <qiun-data-charts type="rose"
+                                        :chartData="weekTickPercent"
+                                        background="none"
+                                        :animation="false" />
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+
           </swiper-item>
           <swiper-item>
-            <view class="swiper-item">C</view>
+            <view class="swiper-item">
+              <scroll-view scroll-y
+                           style="height: 100%;width: 100%;">
+                <view class="box-wrap">
+                  <view class="num-box"
+                        style="background-color: lightseagreen;">
+                    <view class="name-amount">事件总工作量</view>
+                    <view>
+                      <text class="number">3</text>
+                      <text>件</text>
+                    </view>
+                  </view>
+                  <view class="num-box"
+                        style="background-color: cornflowerblue;">
+                    <view class="name-amount">专注时长</view>
+                    <view>
+                      <text class="number">30</text>
+                      <text>min</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="box-cell">
+                  <view class="box-title">事件完成度</view>
+
+                  <view class="charts-box">
+                    <qiun-data-charts type="line"
+                                      :chartData="weekFocusData"
+                                      background="none"
+                                      :animation="false" />
+                  </view>
+                </view>
+              </scroll-view>
+            </view>
           </swiper-item>
         </swiper>
       </view>
@@ -98,7 +177,7 @@
 export default {
   data () {
     return {
-      current: 1,
+      current: 0,
       lastTickData: {
         "series": [
           {
@@ -134,8 +213,92 @@ export default {
             ]
           }
         ]
+      },
+      weekTickData: {
+        "categories": [
+          "2016",
+          "2017",
+          "2018",
+          "2019",
+          "2020",
+          "2021",
+          "2022"
+        ],
+        "series": [
+          {
+            "name": "目标值",
+            "data": [
+              35,
+              36,
+              31,
+              33,
+              13,
+              34,
+              23
+            ]
+          },
+          {
+            "name": "完成量",
+            "data": [
+              18,
+              27,
+              21,
+              24,
+              6,
+              28,
+              23
+            ]
+          }
+        ]
+      },
+      weekTickPercent: {
+        "series": [
+          {
+            "data": [
+              {
+                "name": "完成事件量",
+                "value": 10,
+                "color": "#6495ed"
+              },
+              {
+                "name": "未完成事件量",
+                "value": 2,
+                "color": "#20b2aa"
+              },
+            ]
+          }
+        ]
+      },
+      weekFocusData: {
+        "categories": [
+          "2016",
+          "2017",
+          "2018",
+          "2019",
+          "2020",
+          "2021"
+        ],
+        "series": [
+          {
+            "name": "成交量A",
+            "data": [
+              35,
+              8,
+              25,
+              37,
+              4,
+              20
+            ]
+          }
+        ]
       }
     }
+  },
+  computed: {
+    today () {
+      let d = new Date()
+      return this.$u.timeFormat(d, 'yyyy-mm-dd')
+    },
   },
   methods: {
     changeCurrent (e) {
