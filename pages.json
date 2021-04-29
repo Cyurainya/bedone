@@ -6,7 +6,8 @@
     {
       "path": "pages/mine/dataPage",
       "style": {
-        "navigationBarTitleText": "数据统计"
+        "navigationBarTitleText": "数据统计",
+        "enablePullDownRefresh": true
       }
     },
     {

@@ -15,13 +15,37 @@ exports.main = async (event, context) => {
 		finish:data.finish,
 		duration:data.duration
 	})
-	console.log(res)
-	   return {
-		data:{
-		  status:1,
-		  data:'操作成功'
-		}
+	  return {
+			data:{
+				status:1,
+				data:'操作成功'
+			}
 	  }
+	}else if(operation == 'focusGetByDay'){
+		const res = await collection.where(
+      {
+        userId :  data.userId,
+        day   :  data.time
+      }
+     ).get()
+     return {
+      data:{
+        status:1,
+        data:res.data
+      }
+    }
+	}else if(operation == 'getWeekFocus'){
+		const res = await collection.where({
+      userId:data.userId,
+      day:dbCmd.in(data.time),
+    }).get()
+    console.log(res)
+    return {
+      data:{
+        status:1,
+        data:res.data,
+      }
+    }
 	}
 	
 	//返回数据给客户端

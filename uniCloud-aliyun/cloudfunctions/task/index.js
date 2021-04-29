@@ -95,6 +95,18 @@ exports.main = async (event, context) => {
         data:'添加成功',
       }
     }
+  }else if(operation == 'getWeekTask'){
+    const res = await collection.where({
+      userId:data.userId,
+      time:dbCmd.in(data.time),
+    }).get()
+    console.log(res)
+    return {
+      data:{
+        status:1,
+        data:res.data,
+      }
+    }
   }
  
 	//返回数据给客户端
