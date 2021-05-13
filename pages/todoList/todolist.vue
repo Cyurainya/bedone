@@ -106,7 +106,8 @@
             <view class="title">
               {{item.title}}
             </view>
-            <view class="detail">{{item.detail}}
+            <view class="detail"
+                  v-show="item.detail !== undefined ">{{item.detail}}
               <text>{{item.time}}</text>
 
             </view>
@@ -144,7 +145,7 @@
               {{item.title}}
             </view>
             <view class="detail"
-                  v-show="item.detail !== undefined">{{item.detail}}</view>
+                  v-show="item.detail !== undefined">{{ item.detail}}</view>
           </view>
         </view>
 
@@ -175,7 +176,7 @@
                   {{item.title}}
                 </view>
                 <view class="detail"
-                      v-show="item.detail !== undefined">{{item.detail}}
+                      v-show="item.detail !== undefined ">{{item.detail}}
                   <text style="color:red;padding:0 3vw">{{item.time}}</text>
 
                 </view>
@@ -325,6 +326,7 @@ export default {
           this.laterList.push(item)
         }
       })
+
       //对后续任务进行事件排序
       this.laterList.reduce((a, b) => {
         return a.time - b.time
@@ -383,7 +385,7 @@ export default {
       }
     },
     changeDate (e) {
-      console.log(e)
+
       this.selectTask.time = e.result
     },
     async click (index, index1) {
@@ -447,9 +449,8 @@ export default {
             type: 'success',
           })
 
-          console.log(this.selectTask.time)
-          //如果是后续事件的话需要改界面
-          this.getTask()
+
+
         } else if (res.status == 0) {
           this.$refs.uToast.show({
             title: '添加失败',
@@ -484,6 +485,8 @@ export default {
         }
       }
       this.showTask = false
+      //如果是后续事件的话需要改界面
+      this.getTask()
     }
 
   },

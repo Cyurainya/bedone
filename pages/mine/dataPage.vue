@@ -180,7 +180,7 @@
                   </view>
                 </view>
                 <view class="box-cell">
-                  <view class="box-title">事件完成度</view>
+                  <view class="box-title">专注时长</view>
 
                   <view class="charts-box">
                     <qiun-data-charts type="line"

@@ -12,8 +12,7 @@ exports.main = async (event, context) => {
 				name:data.name
 			}).get()
 			console.log(checkRes)
-			if(checkRes.affectedDocs == 0){
-				
+			if(checkRes.affectedDocs == 0){				
 			return {
 				data:{
 					status:2,
@@ -27,8 +26,7 @@ exports.main = async (event, context) => {
 						data:checkRes
 					}
 				}
-			}
-			
+			}			
 	}else if(operation == 'addRoom'){
 		const checkRes =  await collection.where({
 			name:data.name
