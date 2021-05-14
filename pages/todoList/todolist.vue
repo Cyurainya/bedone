@@ -106,9 +106,10 @@
             <view class="title">
               {{item.title}}
             </view>
-            <view class="detail"
-                  v-show="item.detail !== undefined ">{{item.detail}}
-              <text>{{item.time}}</text>
+            <view class="more">
+              <text class="detail">{{item.detail !== undefined ?item.detail:'无'}}</text>
+
+              <text class="time">{{item.time}}</text>
 
             </view>
           </view>
@@ -144,8 +145,12 @@
             <view class="title">
               {{item.title}}
             </view>
-            <view class="detail"
-                  v-show="item.detail !== undefined">{{ item.detail}}</view>
+            <view class="more">
+              <text class="detail">{{item.detail !== undefined ?item.detail:'无'}}</text>
+
+              <text class="time">{{item.time}}</text>
+
+            </view>
           </view>
         </view>
 
@@ -175,9 +180,10 @@
                 <view class="title">
                   {{item.title}}
                 </view>
-                <view class="detail"
-                      v-show="item.detail !== undefined ">{{item.detail}}
-                  <text style="color:red;padding:0 3vw">{{item.time}}</text>
+                <view class="more">
+                  <text class="detail">{{item.detail !== undefined ?item.detail:'无'}}</text>
+
+                  <text class="time">{{item.time}}</text>
 
                 </view>
               </view>
@@ -574,24 +580,38 @@ export default {
     font-size: 3.5vw;
     font-variant: diagonal-fractions;
   }
-  .detail {
-    color: grey;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    font-size: 3vw;
-    line-height: normal;
+  .more {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    text {
-      color: red;
-      padding: 0 3vw;
-      width: 26vw;
-      text-align: center;
+    .detail {
+      color: grey;
+      font-size: 10px;
+    }
+    .time {
+      color: #ff9800;
+      font-size: 12px;
     }
   }
+  // .detail {
+  //   color: grey;
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: flex;
+  //   font-size: 3vw;
+  //   line-height: normal;
+  //   width: 100%;
+  //   display: flex;
+  //   flex-direction: row;
+  //   justify-content: space-between;
+  //   text {
+  //     color: red;
+  //     padding: 0 3vw;
+  //     width: 26vw;
+  //     text-align: center;
+  //   }
+  // }
 }
 
 .todolist {

@@ -4,6 +4,14 @@
   },
   "pages": [
     {
+      "path": "pages/todoList/todolist",
+      "style": {
+        "navigationBarTitleText": "待办",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
       "path": "pages/mine/mine",
       "style": {
         "navigationBarTitleText": "我的"
@@ -25,14 +33,7 @@
     {
       "path": "pages/studyRoom/room"
     },
-    {
-      "path": "pages/todoList/todolist",
-      "style": {
-        "navigationBarTitleText": "待办",
-        "navigationStyle": "custom",
-        "enablePullDownRefresh": true
-      }
-    },
+
     {
       "path": "pages/focus/focus",
       "style": {
