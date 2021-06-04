@@ -270,6 +270,10 @@ export default {
     }, 2000);
 
   },
+  onPullDownRefresh: function () {
+    console.log('刷新')
+    this.getTask()
+  },
   mounted () {
     this.getTask()
   },

@@ -88,7 +88,7 @@ exports.main = async (event, context) => {
       checkBox:false,
       showSwipe:false
     })
-    console.log(res)
+
     return {
       data:{
         status:1,
@@ -100,7 +100,7 @@ exports.main = async (event, context) => {
       userId:data.userId,
       time:dbCmd.in(data.time),
     }).get()
-    console.log(res)
+   
     return {
       data:{
         status:1,

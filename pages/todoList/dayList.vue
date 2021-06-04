@@ -130,6 +130,10 @@ export default {
     this.day = option.day
 
   },
+  onPullDownRefresh: function () {
+    console.log('刷新')
+    this.getTaskByDay()
+  },
   mounted () {
     this.getTaskByDay()
   },
@@ -228,7 +232,6 @@ export default {
             title: '添加成功',
             type: 'success',
           })
-
         }
       } else {
         const res = request('task', 'editTask', {

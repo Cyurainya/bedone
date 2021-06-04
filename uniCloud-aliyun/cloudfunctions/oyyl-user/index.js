@@ -22,11 +22,12 @@ exports.main = async(event) =>{
 			gender,
 			avatarUrl:avatar
 		} = userInfo;
-
+		
 		//通过openid查库里的数据
 		const result = await collection.where({
 			wx_openid:openId
 		}).get();
+		console.log(result)
 		let id = null
 		//判断数据库里面有没有用户登陆过的状态
 		if(result.data.length > 0){
@@ -37,6 +38,7 @@ exports.main = async(event) =>{
 			gender = user.gender;
 			avatar = user.avatar
 			
+			console.log(user)
 		}else{
 			const newUser = await collection.add({
 				nickname,

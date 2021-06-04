@@ -203,7 +203,7 @@ import { request } from '@/utils/request/request.js'
 export default {
   data () {
     return {
-      current: 2,//轮播图的current Index
+      current: 0,//轮播图的current Index
       weekList: [],
       lastTickData: {
         "series": [
@@ -335,6 +335,7 @@ export default {
     this.getWeekTask();//获取最近七天的事件
     this.getWeekFocus();//获取最近七天的专注
   },
+
   computed: {
     today () {
       let d = new Date()

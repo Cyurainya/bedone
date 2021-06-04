@@ -13,17 +13,6 @@ export default {
     async mpWxLogin(userInfoData) {
       await this.mpWxGetUserInfo(userInfoData)
       this.$util.msg('登陆成功')
-      // setTimeout(() => {
-      //   uni.navigateTo({
-      //     url: '/pages/index/index',
-      //     success(res) {
-      //       console.log(res)
-      //     },
-      //     fail(err) {
-      //       console.log(err)
-      //     }
-      //   })
-      // }, 1000)
     },
     // 获取用户信息
     mpWxGetUserInfo(userInfoData) {
@@ -36,7 +25,8 @@ export default {
             provider: 'weixin'
           })
           const [err, userData] = await uni.getUserInfo()
-          console.log(loginErr, err)
+         	console.log(loginData)
+         	console.log(userData)
           const res = await request(
             'oyyl-user',
             'loginByWeixin',
